@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>    
+    <title>To-Do</title>
+</head>
+<body>
+    <!-- start of header -->
+    <header>
+        <div class="container">
+            <p class="logo">To-Do</p>
+            <button data-new-list>New List</button>
+        </div>
+    </header>
+    <!-- end of header -->
+    <!-- start app section -->
+    <div class="app">
+        <div class="create-list-popup">
+            <div class="list-popup-header">
+                <h3>Creating your List</h3>
+                <span data-list-close>×</span>
+            </div>
+            <label>List name</i></label>
+            <input type="text" autocomplete="off" data-list-name>
+            <p>Choose a color theme</p>
+            <div class="themes">
+                <span class="theme selected-theme" data-theme="ffbd35"></span>
+                <span class="theme" data-theme="3fa796"></span>
+                <span class="theme" data-theme="35589a"></span>
+            </div>
+            <button class="create-list">Create</button>
+        </div>
+
+        <div class="create-task-popup">
+            <div class="popup-header">
+                <h3 class="task-popup-h3">Creating your task</h3>
+                <span data-close>×</span>
+            </div>
+            <label>Task</i></label>
+            <input type="text" autocomplete="off" data-task-name>
+            <label>Due date</label>
+            <input type="date" autocomplete="off" data-task-date>
+            <p>Priority</p>
+            <div class="priority-container">
+                <span class="priority selected-priority" data-priority="green"></span>
+                <span class="priority" data-priority="orange"></span>
+                <span class="priority" data-priority="red"></span>
+            </div>
+            <button class="create-task">Create</button>
+        </div>
+
+        <div class="lists"></div>
+        <div class="empty-page">
+            <p>Enhance your <span>Productivity</span> by adding a new List ⬆</p>
+          </div>
+        <div class="overlay"></div>
+    </div>
+    <!-- end app section -->
+</body>
+</html>
