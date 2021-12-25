@@ -1,67 +1,45 @@
 const app = document.querySelector(".app");
-
 const listNameInput = document.querySelector("[data-list-name]");
-
 const themes = document.querySelectorAll(".theme");
-
 const createListButton = document.querySelector(".create-list");
-
 const createListDiv = document.querySelector(".create-list-popup");
-
 const listsContainer = document.querySelector(".lists");
-
 const overlayDiv = document.querySelector(".overlay");
-
 const priorities = document.querySelectorAll(".priority");
-
 const taskNameElement = document.querySelector("[data-task-name]");
-
 const taskDateElement = document.querySelector("[data-task-date]");
-
 const createTaskDiv = document.querySelector(".create-task-popup");
-
 const closeTaskPopup = document.querySelector("[data-close]");
-
 const newList = document.querySelector("[data-new-list]");
-
 const createTaskButton = document.querySelector(".create-task");
-
 const emptyPageText = document.querySelector(".empty-page");
+const closeListPopup = document.querySelector("[data-list-close]");
 
-const closeListPopup = document.querySelector('[data-list-close]')
-
-
-let listTheme = "ffbd35";
-function chooseTheme(theme) {
-  for (let i = 0; i < themes.length; i++) {
-    if (themes[i].classList.value.includes("selected-theme")) {
-      themes[i].classList.remove("selected-theme");
-      theme.classList.add("selected-theme");
-      return theme.getAttribute("data-theme");
+function chooseColor(colors, color) {
+  let typeOfColors = "theme";
+  if (colors === priorities) {
+    typeOfColors = "priority";
+  }
+  for (let i = 0; i < colors.length; i++) {
+    if (colors[i].classList.value.includes(`selected-${typeOfColors}`)) {
+      colors[i].classList.remove(`selected-${typeOfColors}`);
+      color.classList.add(`selected-${typeOfColors}`);
+      return color.getAttribute(`data-${typeOfColors}`);
     }
   }
 }
 
+let listTheme = "ffbd35";
 themes.forEach((theme) => {
   theme.addEventListener("click", () => {
-    listTheme = chooseTheme(theme);
+    listTheme = chooseColor(themes, theme);
   });
 });
 
 let taskPriority = "green";
-function choosePriority(priority) {
-  for (let i = 0; i < priorities.length; i++) {
-    if (priorities[i].classList.value.includes("selected-priority")) {
-      priorities[i].classList.remove("selected-priority");
-      priority.classList.add("selected-priority");
-      return priority.getAttribute("data-priority");
-    }
-  }
-}
-
 priorities.forEach((priority) => {
   priority.addEventListener("click", () => {
-    taskPriority = choosePriority(priority);
+    taskPriority = chooseColor(priorities, priority);
   });
 });
 
@@ -80,7 +58,7 @@ function createList(name) {
   <div class="header">
   <h4 style="color:#${listTheme}">${name}</h4>
   <div class="icons">
-  <button class="new-task-button" data-list-id="list${listIndex}" onclick="showPopupTask(this)" title="Add new task">+</button>
+  <button class="new-task-button" data-list-id="list${listIndex}" onclick="addTask(this)" title="Add new task">+</button>
   <button class="delete-list-button" data-list-id="list${listIndex}" onclick="deleteList(this)" title="Delete list">
   <i class="fas fa-trash-alt"></i>
   </button>
@@ -88,11 +66,12 @@ function createList(name) {
   </div>
   </div>
   `;
-  overlayDiv.classList.remove("overlay-active");
-  createListDiv.style.transform = "translate(-50%,-50%) scale(0)";
-  listNameInput.value = "";
 
-  setDefaultColor(themes)
+  hideListPopup();
+
+  // Set List Pop-up attributes =>  default values
+  listNameInput.value = "";
+  setDefaultColor(themes);
   listTheme = "ffbd35";
 }
 
@@ -106,12 +85,11 @@ function deleteList(btn) {
 }
 
 let listId;
-function showPopupTask(clickedBtn) {
-  createTaskButton.innerText = "Create"
-  document.querySelector('.task-popup-h3').innerText = 'Creating your task'
+function addTask(clickedBtn) {
+  createTaskButton.innerText = "Create";
+  document.querySelector(".task-popup-h3").innerText = "Creating your task";
   listId = clickedBtn.getAttribute("data-list-id");
-  overlayDiv.classList.add("overlay-active");
-  createTaskDiv.style.transform = "translate(-50%,-50%) scale(1)";
+  showTaskPopup();
 }
 
 createTaskButton.addEventListener("click", () => {
@@ -140,22 +118,19 @@ function updateTask() {
   <span style="background-color:${taskPriority}"></span>
   <span class="date">${taskDateElement.value}</span>
   </div>
-  `
-  taskNameElement.value = ''
-  taskDateElement.value = ''
-  setDefaultColor(priorities)
-  taskPriority = "green";
+  `;
+
+  hideTaskPopup();
   
-  overlayDiv.classList.remove("overlay-active");
-  createTaskDiv.style.transform = "translate(-50%,-50%) scale(0)";
+  clearTaskPopupValues();
+
 }
 
 let taskIndex = 0;
 function createTask() {
- 
   if (createTaskButton.innerText === "Update") {
-    updateTask()
-    return
+    updateTask();
+    return;
   }
 
   if (taskNameElement.value === "" || taskDateElement.value === "") return;
@@ -183,14 +158,10 @@ function createTask() {
     <span class="date">${taskDateElement.value}</span>
     </div>
     `;
-  overlayDiv.classList.remove("overlay-active");
-  createTaskDiv.style.transform = "translate(-50%,-50%) scale(0)";
 
-  taskNameElement.value = ""
-  taskDateElement.value = ""
+  hideTaskPopup();
+  clearTaskPopupValues();
 
-  setDefaultColor(priorities)
-  taskPriority = "green";
 }
 
 let deleteTaskId;
@@ -199,61 +170,53 @@ function deleteTask(btn) {
   document.querySelector(`#${deleteTaskId}`).remove();
 }
 
-let editedTaskId
+let editedTaskId;
 function editTask(btn) {
   editedTaskId = btn.getAttribute("data-task-id");
   let taskName = btn.getAttribute("data-task-name");
   let taskDate = btn.getAttribute("data-task-date");
   let taskPriorityColor = btn.getAttribute("data-task-priority");
-  
-  createTaskButton.innerText = "Update"
-  document.querySelector('.task-popup-h3').innerText = 'Edit Task'
-  taskNameElement.value = taskName
-  taskDateElement.value = taskDate
-  taskPriority = taskPriorityColor
+
+  createTaskButton.innerText = "Update";
+  document.querySelector(".task-popup-h3").innerText = "Edit Task";
+  taskNameElement.value = taskName;
+  taskDateElement.value = taskDate;
+  taskPriority = taskPriorityColor;
 
   priorities.forEach((priority) => {
-    let dataPriority = priority.getAttribute('data-priority')
+    let dataPriority = priority.getAttribute("data-priority");
     if (dataPriority === taskPriorityColor) {
-      priority.classList.add('selected-priority')
+      priority.classList.add("selected-priority");
     } else {
-      priority.classList.remove('selected-priority')
+      priority.classList.remove("selected-priority");
     }
-  })
+  });
 
-  console.log(editedTaskId,taskDate,taskName,taskPriorityColor)
-
-  overlayDiv.classList.add("overlay-active");
-  createTaskDiv.style.transform = "translate(-50%,-50%) scale(1)";
+  showTaskPopup();
 }
 
 closeTaskPopup.addEventListener("click", () => {
-  overlayDiv.classList.remove("overlay-active");
-  createTaskDiv.style.transform = "translate(-50%,-50%) scale(0)";
-  taskNameElement.value = ""
-  taskDateElement.value = ""
-
-  setDefaultColor(priorities)
-  taskPriority = "green";
+  hideTaskPopup();
+  clearTaskPopupValues();
 });
 
 closeListPopup.addEventListener("click", () => {
   if (listsContainer.innerText === "") {
     emptyPageText.style.transform = "translate(-50%,-50%) scale(1)";
   }
-  overlayDiv.classList.remove("overlay-active");
-  createListDiv.style.transform = "translate(-50%,-50%) scale(0)";
-  ListNameElement.value = ""
 
-  setDefaultColor(themes)
-  listTheme = "ffbd35";
+  hideListPopup();
+  clearListPopupValues();
+});
+
+newList.addEventListener("click", () => {
+  showListPopup();
 });
 
 function setDefaultColor(colors) {
-  let typeOfColors = 'theme'
-  if (colors === themes) {
-  } else {
-    typeOfColors = 'priority'
+  let typeOfColors = "theme";
+  if (colors === priorities) {
+    typeOfColors = "priority";
   }
   colors.forEach((color, index) => {
     if (index === 0) {
@@ -264,7 +227,35 @@ function setDefaultColor(colors) {
   });
 }
 
-newList.addEventListener("click", () => {
-    overlayDiv.classList.add("overlay-active");
-    createListDiv.style.transform = "translate(-50%,-50%) scale(1)";
-});
+function clearTaskPopupValues() {
+  taskNameElement.value = "";
+  taskDateElement.value = "";
+  setDefaultColor(priorities);
+  taskPriority = "green";
+}
+
+function clearListPopupValues() {
+  listNameInput.value = "";
+  setDefaultColor(themes);
+  listTheme = "ffbd35";
+}
+
+function showTaskPopup() {
+  overlayDiv.classList.add("overlay-active");
+  createTaskDiv.style.transform = "translate(-50%,-50%) scale(1)";
+}
+
+function showListPopup() {
+  overlayDiv.classList.add("overlay-active");
+  createListDiv.style.transform = "translate(-50%,-50%) scale(1)";
+}
+
+function hideTaskPopup() {
+  overlayDiv.classList.remove("overlay-active");
+  createTaskDiv.style.transform = "translate(-50%,-50%) scale(0)";
+}
+
+function hideListPopup() {
+  overlayDiv.classList.remove("overlay-active");
+  createListDiv.style.transform = "translate(-50%,-50%) scale(0)";
+}
