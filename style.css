@@ -64,6 +64,7 @@ header .container .logo {
   border-radius: 10px;
   padding: 15px 25px;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 15px 0px;
+  background-color: white;
   position: fixed;
   top: 50%;
   left: 50%;
@@ -294,8 +295,8 @@ header .container .logo {
   border-radius: 5px;
   margin: 20px;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 15px 0px;
-  
 }
+
 
 .app .lists .list .header {
   display: flex;
@@ -336,22 +337,75 @@ header .container .logo {
   margin-bottom:10px ;
   border-radius: 5px;
   background-color:rgb(220,220,220, 0.4);
+  position: relative;
 }
 
+.app .lists .list .task .options {
+  position: absolute;
+  top: 30px;
+  right: 10px;
+  width: 100px;
+  border-radius: 10px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 0px 20px 5px;
+  transform: scale(0);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(250, 250, 250);
+}
+
+.app .lists .list .task .options button {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0 5px 8px;
+  cursor: pointer;
+  transition: 0.3s all ease;
+  border: none;
+  outline: none;
+}
+
+.app .lists .list .task .options button:hover {
+
+  opacity: 0.5;
+}
+
+.app .lists .list .task .options button:first-of-type {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.app .lists .list .task .options button:nth-of-type(2) {
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  background-color: salmon;
+  color: white;
+}
+.app .lists .list .task .options button i {
+  margin-right: 5px;
+}
+
+.app .lists .list .task .options button:nth-of-type(2) i {
+  transform: translateX(-30%);
+}
 
 .app .lists .list .task .header {
   display: flex;
   justify-content: space-between;
-  
 }
 
 .app .lists .list .task .header button {
   background-color: transparent;
   color: rgba(0, 0, 0, 0.9);
-  padding: 2px;
+  padding: 0;
 }
 
+.app .lists .list .task .header button:hover {
+  opacity: 0.7;
+}
 
+.app .lists .list .task .header button i {
+  font-size: 1.4rem;
+}
 
 .app .lists .list .task h4 {
   color: rgb(0, 0,0,0.7);
