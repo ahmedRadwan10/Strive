@@ -68,20 +68,32 @@ function createList(name) {
   `;
 
   hideListPopup();
-
-  // Set List Pop-up attributes =>  default values
-  listNameInput.value = "";
-  setDefaultColor(themes);
-  listTheme = "ffbd35";
+  clearListPopupValues()
 }
 
-let deleteListId;
+function reassignListsIds() {
+  let numberOfElements = 0
+  document.querySelectorAll('.list').forEach((list) => {
+    numberOfElements++;
+    let oldListIdIndex = parseInt(list.getAttribute('id').at(-1))
+    if (oldListIdIndex !== 1 && oldListIdIndex > numberOfElements ) {
+      oldListIdIndex--;
+      list.setAttribute('id', `list${oldListIdIndex}`)
+      list.firstElementChild.lastElementChild.firstElementChild.setAttribute('data-list-id',`list${oldListIdIndex}`)
+      list.firstElementChild.lastElementChild.lastElementChild.setAttribute('data-list-id',`list${oldListIdIndex}`)
+    }
+  })
+  listIndex = numberOfElements
+}
+
+
 function deleteList(btn) {
-  deleteListId = btn.getAttribute("data-list-id");
-  document.querySelector(`#${deleteListId}`).remove();
+  let listIdToDelete = btn.getAttribute("data-list-id");
+  document.querySelector(`#${listIdToDelete}`).remove();
   if (listsContainer.innerText === "") {
     emptyPageText.style.transform = "translate(-50%,-50%) scale(1)";
   }
+  reassignListsIds()
 }
 
 let listId;
@@ -100,30 +112,29 @@ function updateTask() {
   document.querySelector(`#${editedTaskId}`).innerHTML = `
   <div class="header">
   <h4>${taskNameElement.value}</h4>
-  <div class="icons">
+  <button data-task-index="${editedTaskId.at(-1)}" onclick="showOptionsPopup(this)"><i class="fas fa-ellipsis-h"></i></button>
+  </div>
+  <div class="span-container">
+  <span style="background-color:${taskPriority}"></span>
+  <span class="date">${taskDateElement.value}</span>
+  </div>
+  <div class="options">
   <button class="edit-task-button"
   data-task-id="${editedTaskId}" 
   data-task-date="${taskDateElement.value}"
   data-task-name="${taskNameElement.value}"
   data-task-priority="${taskPriority}"
   onclick="editTask(this)" title="Edit task">
-  <i class="far fa-edit"></i>
+  Edit<i class="far fa-edit"></i> 
   </button>
   <button class="delete-task-button" data-task-id="${editedTaskId}" onclick="deleteTask(this)" title="Delete task">
-  <i class="fas fa-trash-alt"></i>
+  Delete<i class="fas fa-trash-alt"></i> 
   </button>
   </div>
   </div>
-  <div class="span-container">
-  <span style="background-color:${taskPriority}"></span>
-  <span class="date">${taskDateElement.value}</span>
-  </div>
   `;
-
   hideTaskPopup();
-  
   clearTaskPopupValues();
-
 }
 
 let taskIndex = 0;
@@ -132,30 +143,30 @@ function createTask() {
     updateTask();
     return;
   }
-
   if (taskNameElement.value === "" || taskDateElement.value === "") return;
-
   document.querySelector(`#${listId}`).innerHTML += `
     <div class="task" id="task${++taskIndex}">
     <div class="header">
     <h4>${taskNameElement.value}</h4>
-    <div class="icons">
+    <button data-task-index="${taskIndex}" onclick="showOptionsPopup(this)"><i class="fas fa-ellipsis-h"></i></button>
+    </div>
+    <div class="span-container">
+    <span style="background-color:${taskPriority}"></span>
+    <span class="date">${taskDateElement.value}</span>
+    </div>
+    <div class="options">
     <button class="edit-task-button"
     data-task-id="task${taskIndex}" 
     data-task-date="${taskDateElement.value}"
     data-task-name="${taskNameElement.value}"
     data-task-priority="${taskPriority}"
     onclick="editTask(this)" title="Edit task">
-    <i class="far fa-edit"></i>
+    Edit<i class="far fa-edit"></i> 
     </button>
     <button class="delete-task-button" data-task-id="task${taskIndex}" onclick="deleteTask(this)" title="Delete task">
-    <i class="fas fa-trash-alt"></i>
+    Delete<i class="fas fa-trash-alt"></i> 
     </button>
     </div>
-    </div>
-    <div class="span-container">
-    <span style="background-color:${taskPriority}"></span>
-    <span class="date">${taskDateElement.value}</span>
     </div>
     `;
 
@@ -164,10 +175,27 @@ function createTask() {
 
 }
 
+function reassignTasksIds() {
+  let numberOfElements = 0
+  document.querySelectorAll('.task').forEach((task) => {
+    numberOfElements++;
+    let oldTaskIdIndex = parseInt(task.getAttribute('id').at(-1))
+    if (oldTaskIdIndex !== 1 && oldTaskIdIndex > numberOfElements ) {
+      oldTaskIdIndex--;
+      task.setAttribute('id', `task${oldTaskIdIndex}`)
+      task.firstElementChild.lastElementChild.setAttribute('data-task-index',`${oldTaskIdIndex}`)
+      task.lastElementChild.firstElementChild.setAttribute('data-task-id',`task${oldTaskIdIndex}`)
+      task.lastElementChild.lastElementChild.setAttribute('data-task-id',`task${oldTaskIdIndex}`)
+    }
+  })
+  taskIndex = numberOfElements
+}
+
 let deleteTaskId;
 function deleteTask(btn) {
   deleteTaskId = btn.getAttribute("data-task-id");
   document.querySelector(`#${deleteTaskId}`).remove();
+  reassignTasksIds()
 }
 
 let editedTaskId;
@@ -225,6 +253,18 @@ function setDefaultColor(colors) {
       color.classList.remove(`selected-${typeOfColors}`);
     }
   });
+}
+
+document.addEventListener('mouseup', () => {
+  document.querySelectorAll('.options').forEach((option) => {
+    option.style.transform = "scale(0)"
+  })
+})
+
+
+function showOptionsPopup(btn) {
+ let optionsTaskIndex = parseInt(btn.getAttribute('data-task-index'))
+  document.querySelector(`#task${optionsTaskIndex}`).lastElementChild.style.transform = "scale(1)"
 }
 
 function clearTaskPopupValues() {
