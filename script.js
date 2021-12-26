@@ -14,6 +14,29 @@ const newList = document.querySelector("[data-new-list]");
 const createTaskButton = document.querySelector(".create-task");
 const emptyPageText = document.querySelector(".empty-page");
 const closeListPopup = document.querySelector("[data-list-close]");
+const validationListName = document.querySelector('.validation-list-name')
+const validationTaskName = document.querySelector('.validation-task-name')
+
+
+
+
+function showListValidationText() {
+  if (listNameInput.value === '') {
+    validationListName.style.transform = "scale(1)"
+  } else {
+    validationListName.style.transform = "scale(0)"
+  }
+}
+
+
+function showTaskValidationText() {
+  if (taskNameElement.value === '') {
+    validationTaskName.style.transform = "scale(1)"
+  } else {
+    validationTaskName.style.transform = "scale(0)"
+  }
+}
+
 
 function chooseColor(colors, color) {
   let typeOfColors = "theme";
@@ -109,6 +132,8 @@ createTaskButton.addEventListener("click", () => {
 });
 
 function updateTask() {
+  if (taskNameElement.value === '') return
+
   document.querySelector(`#${editedTaskId}`).innerHTML = `
   <div class="header">
   <h4>${taskNameElement.value}</h4>
@@ -116,7 +141,7 @@ function updateTask() {
   </div>
   <div class="span-container">
   <span style="background-color:${taskPriority}"></span>
-  <span class="date">${taskDateElement.value}</span>
+  <span class="date">${taskDateElement.value ? taskDateElement.value : 'no-date' }</span>
   </div>
   <div class="options">
   <button class="edit-task-button"
@@ -143,7 +168,7 @@ function createTask() {
     updateTask();
     return;
   }
-  if (taskNameElement.value === "" || taskDateElement.value === "") return;
+  if (taskNameElement.value === "") return;
   document.querySelector(`#${listId}`).innerHTML += `
     <div class="task" id="task${++taskIndex}">
     <div class="header">
@@ -152,7 +177,7 @@ function createTask() {
     </div>
     <div class="span-container">
     <span style="background-color:${taskPriority}"></span>
-    <span class="date">${taskDateElement.value}</span>
+    <span class="date">${taskDateElement.value ? taskDateElement.value : 'no-date'}</span>
     </div>
     <div class="options">
     <button class="edit-task-button"
@@ -281,11 +306,13 @@ function clearListPopupValues() {
 }
 
 function showTaskPopup() {
+  if (taskNameElement.value === '') validationTaskName.style.transform = "scale(1)"
   overlayDiv.classList.add("overlay-active");
   createTaskDiv.style.transform = "translate(-50%,-50%) scale(1)";
 }
 
 function showListPopup() {
+  validationListName.style.transform = "scale(1)"
   overlayDiv.classList.add("overlay-active");
   createListDiv.style.transform = "translate(-50%,-50%) scale(1)";
 }

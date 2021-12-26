@@ -27,7 +27,8 @@
                 <span data-list-close>×</span>
             </div>
             <label>List name</i></label>
-            <input type="text" autocomplete="off" data-list-name>
+            <input type="text" autocomplete="off" data-list-name on oninput="showListValidationText()">
+            <p class="validation-list-name">please provide a name for your list</p>
             <p>Choose a color theme</p>
             <div class="themes">
                 <span class="theme selected-theme" data-theme="ffbd35"></span>
@@ -43,7 +44,8 @@
                 <span data-close>×</span>
             </div>
             <label>Task</i></label>
-            <input type="text" autocomplete="off" data-task-name>
+            <input type="text" autocomplete="off" data-task-name oninput="showTaskValidationText()">
+            <p class="validation-task-name">please provide a name for your task</p>
             <label>Due date</label>
             <input type="date" autocomplete="off" data-task-date>
             <p>Priority</p>
@@ -57,7 +59,7 @@
 
         <div class="lists"></div>
         <div class="empty-page">
-            <p>Enhance your <span>Productivity</span> by adding a new List ⬆</p>
+            <p>Enhance your <span>Productivity</span> by adding a new List ...</p>
           </div>
         <div class="overlay"></div>
     </div>

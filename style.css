@@ -114,7 +114,7 @@ header .container .logo {
   outline: none;
   border: 1px solid #35589a;
   border-radius: 5px;
-  margin: 10px 0 30px;
+  margin: 10px 0 5px;
   opacity: 50%;
   font-size: 0.8rem;
   color: #35589a;
@@ -125,12 +125,17 @@ header .container .logo {
   opacity: 100%;
 }
 
-.app .create-list-popup p {
+.app .create-list-popup p:first-of-type {
+  color: salmon;
+  margin-bottom: 30px;
+  font-weight: 300;
+  transform: scale(1);
+}
+.app .create-list-popup p:nth-of-type(2) {
   font-weight: 300;
   color: #35589a;
   margin-bottom: 10px;
 }
-
 .app .create-list-popup .themes span {
   width: 50px;
   height: 50px;
@@ -167,13 +172,18 @@ header .container .logo {
   cursor: pointer;
   background-color: gray;
   color: white;
+  transition: 0.3s all ease;
+}
+
+.app .create-list-popup button:hover {
+  opacity: 0.7;
 }
 
 /* start create task popup */
 
 .app .create-task-popup {
   width: 400px;
-  height: 400px;
+  height: 500px;
   background-color: azure;
   border-radius: 10px;
   padding: 15px 25px;
@@ -221,15 +231,30 @@ header .container .logo {
   outline: none;
   border: 1px solid #35589a;
   border-radius: 5px;
-  margin: 10px 0 20px;
+  margin: 10px 0 5px;
   opacity: 50%;
   font-size: 0.8rem;
   color: #35589a;
   transition: 0.3s all ease;
 }
+.app .create-task-popup input:nth-of-type(2) {
+  margin-bottom: 40px;
+}
 
 .app .create-task-popup input:hover {
   opacity: 100%;
+}
+
+.app .create-task-popup .validation-task-name {
+  color: salmon;
+  margin-bottom: 30px;
+  transform: scale(1);
+}
+
+.app .create-task-popup .validation-task-date {
+  color: salmon;
+  margin-bottom: 30px;
+  transform: scale(1);
 }
 
 .app .create-task-popup p {
@@ -240,7 +265,7 @@ header .container .logo {
 
 .app .create-task-popup .priority-container span {
   width: 60px;
-  height: 10px;
+  height: 20px;
   margin-right: 10px;
   display: inline-block;
   border-radius: 5px;
@@ -275,6 +300,11 @@ header .container .logo {
   color: white;
   padding: 10px 15px;
   cursor: pointer;
+  transition: 0.3s all ease;
+}
+
+.app .create-task-popup button:hover {
+  opacity: 0.7;
 }
 
 /* end create task popup */
