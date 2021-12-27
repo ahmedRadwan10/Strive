@@ -129,7 +129,7 @@ header .container .logo {
   color: salmon;
   margin-bottom: 30px;
   font-weight: 300;
-  transform: scale(1);
+  transform: scale(0);
 }
 
 @media screen and (max-width:450px) {
@@ -254,7 +254,7 @@ header .container .logo {
 .app .create-task-popup .validation-task-name {
   color: salmon;
   margin-bottom: 30px;
-  transform: scale(1);
+  transform: scale(0);
 }
 
 @media screen and (max-width:450px) {
@@ -343,7 +343,8 @@ header .container .logo {
 
 .app .lists .list .header h4 {
   font-weight: 600;
-  color: #35589a;
+  max-width: 70%;
+  word-break: break-all;
 }
 
 .app .lists .list .header button {
