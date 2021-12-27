@@ -14,29 +14,24 @@ const newList = document.querySelector("[data-new-list]");
 const submitTaskButton = document.querySelector(".create-task");
 const emptyPageText = document.querySelector(".empty-page");
 const closeListPopup = document.querySelector("[data-list-close]");
-const validationListName = document.querySelector('.validation-list-name')
-const validationTaskName = document.querySelector('.validation-task-name')
-
-
-
+const validationListName = document.querySelector(".validation-list-name");
+const validationTaskName = document.querySelector(".validation-task-name");
 
 function showListValidationText() {
-  if (listNameInput.value === '') {
-    validationListName.style.transform = "scale(1)"
+  if (listNameInput.value === "") {
+    validationListName.style.transform = "scale(1)";
   } else {
-    validationListName.style.transform = "scale(0)"
+    validationListName.style.transform = "scale(0)";
   }
 }
-
 
 function showTaskValidationText() {
-  if (taskNameElement.value === '') {
-    validationTaskName.style.transform = "scale(1)"
+  if (taskNameElement.value === "") {
+    validationTaskName.style.transform = "scale(1)";
   } else {
-    validationTaskName.style.transform = "scale(0)"
+    validationTaskName.style.transform = "scale(0)";
   }
 }
-
 
 function chooseColor(colors, color) {
   let typeOfColors = "theme";
@@ -70,13 +65,12 @@ createListButton.onclick = () => {
   createList(listNameInput.value);
 };
 
-
 function createList(name) {
-  let listId
+  let listId;
   if (name === "") return;
   emptyPageText.style.transform = "translate(-50%,-50%) scale(0)";
-  let formatedDate = Date().slice(0, 24).split(" ").join("")
-  listId = formatedDate.replace(/:/g,'')
+  let formatedDate = Date().slice(0, 24).split(" ").join("");
+  listId = formatedDate.replace(/:/g, "");
   listsContainer.innerHTML += `
   <div class="list" id="${listId}">
   <div class="header">
@@ -91,7 +85,7 @@ function createList(name) {
   </div>
   `;
   hideListPopup();
-  clearListPopupValues()
+  clearListPopupValues();
 }
 
 function deleteList(btn) {
@@ -102,7 +96,7 @@ function deleteList(btn) {
   }
 }
 
-let listIdToAddTask
+let listIdToAddTask;
 function addTask(clickedBtn) {
   submitTaskButton.textContent = "Create";
   document.querySelector(".task-popup-h3").textContent = "Creating your task";
@@ -119,22 +113,45 @@ submitTaskButton.onclick = () => {
 };
 
 function updateTask() {
-  if (taskNameElement.value === '') return
-  document.querySelector(`#${ToEditTaskId}`).children[0].firstElementChild.textContent = `${taskNameElement.value}`
-  document.querySelector(`#${ToEditTaskId}`).children[1].lastElementChild.textContent = `${taskDateElement.value ? taskDateElement.value : 'no-date'}`
-  document.querySelector(`#${ToEditTaskId}`).children[1].firstElementChild.style.backgroundColor = `${taskPriority}`
-  document.querySelector(`#${ToEditTaskId}`).children[2].children[0].setAttribute('data-task-date', `${taskDateElement.value}`)
-  document.querySelector(`#${ToEditTaskId}`).children[2].children[0].setAttribute('data-task-name', `${taskNameElement.value}`)
-  document.querySelector(`#${ToEditTaskId}`).children[2].children[0].setAttribute('data-task-priority', `${taskPriority}`)
+  if (taskNameElement.value === "") return;
+  document.querySelector(
+    `#${ToEditTaskId}`
+  ).children[0].firstElementChild.textContent = `${taskNameElement.value}`;
+  document.querySelector(
+    `#${ToEditTaskId}`
+  ).children[1].lastElementChild.textContent = `${
+    taskDateElement.value ? taskDateElement.value : "no-date"
+  }`;
+  document.querySelector(
+    `#${ToEditTaskId}`
+  ).children[1].firstElementChild.style.backgroundColor = `${taskPriority}`;
+  document
+    .querySelector(`#${ToEditTaskId}`)
+    .children[2].children[0].setAttribute(
+      "data-task-date",
+      `${taskDateElement.value}`
+    );
+  document
+    .querySelector(`#${ToEditTaskId}`)
+    .children[2].children[0].setAttribute(
+      "data-task-name",
+      `${taskNameElement.value}`
+    );
+  document
+    .querySelector(`#${ToEditTaskId}`)
+    .children[2].children[0].setAttribute(
+      "data-task-priority",
+      `${taskPriority}`
+    );
   hideTaskPopup();
   clearTaskPopupValues();
 }
 
 function createTask() {
-  let taskId
+  let taskId;
   if (taskNameElement.value === "") return;
-  let formatedDate = Date().slice(0, 24).split(" ").join("")
-  taskId = formatedDate.replace(/:/g,'')
+  let formatedDate = Date().slice(0, 24).split(" ").join("");
+  taskId = formatedDate.replace(/:/g, "");
   document.querySelector(`#${listIdToAddTask}`).innerHTML += `
     <div class="task" id="${taskId}">
     <div class="header">
@@ -143,7 +160,9 @@ function createTask() {
     </div>
     <div class="span-container">
     <span style="background-color:${taskPriority}"></span>
-    <span class="date">${taskDateElement.value ? taskDateElement.value : 'no-date'}</span>
+    <span class="date">${
+      taskDateElement.value ? taskDateElement.value : "no-date"
+    }</span>
     </div>
     <div class="options">
     <button class="edit-task-button"
@@ -160,12 +179,10 @@ function createTask() {
     </div>
     </div>
     `;
-  
+
   hideTaskPopup();
   clearTaskPopupValues();
-
 }
-
 
 function deleteTask(btn) {
   let ToDeleteTaskId = btn.getAttribute("data-task-id");
@@ -180,7 +197,12 @@ function editTask(btn) {
   taskNameElement.value = btn.getAttribute("data-task-name");
   taskDateElement.value = btn.getAttribute("data-task-date");
   taskPriority = btn.getAttribute("data-task-priority");
-  console.log(ToEditTaskId, taskPriority, taskNameElement.value, taskDateElement.value  )
+  console.log(
+    ToEditTaskId,
+    taskPriority,
+    taskNameElement.value,
+    taskDateElement.value
+  );
   priorities.forEach((priority) => {
     let dataPriority = priority.getAttribute("data-priority");
     if (dataPriority === btn.getAttribute("data-task-priority")) {
@@ -224,15 +246,15 @@ function setDefaultColor(colors) {
 }
 
 document.onmouseup = () => {
-  document.querySelectorAll('.options').forEach((option) => {
-    option.style.transform = "scale(0)"
-  })
-}
-
+  document.querySelectorAll(".options").forEach((option) => {
+    option.style.transform = "scale(0)";
+  });
+};
 
 function showOptionsPopup(btn) {
- let optionsTaskId = btn.getAttribute('data-task-id')
-  document.querySelector(`#${optionsTaskId}`).lastElementChild.style.transform = "scale(1)"
+  let optionsTaskId = btn.getAttribute("data-task-id");
+  document.querySelector(`#${optionsTaskId}`).lastElementChild.style.transform =
+    "scale(1)";
 }
 
 function clearTaskPopupValues() {
@@ -261,11 +283,11 @@ function showListPopup() {
 function hideTaskPopup() {
   overlayDiv.classList.remove("overlay-active");
   createTaskDiv.style.transform = "translate(-50%,-50%) scale(0)";
-  validationTaskName.style.transform = "scale(0)"
+  validationTaskName.style.transform = "scale(0)";
 }
 
 function hideListPopup() {
   overlayDiv.classList.remove("overlay-active");
   createListDiv.style.transform = "translate(-50%,-50%) scale(0)";
-  validationListName.style.transform = "scale(0)"
+  validationListName.style.transform = "scale(0)";
 }
