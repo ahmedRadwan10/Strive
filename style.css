@@ -402,8 +402,9 @@ header .container .logo {
 }
 
 .app .lists .list .task .options button:hover {
-
+  background-color: gray;
   opacity: 0.5;
+  color: aliceblue;
 }
 
 .app .lists .list .task .options button:first-of-type {
@@ -412,6 +413,10 @@ header .container .logo {
 }
 
 .app .lists .list .task .options button:nth-of-type(2) {
+  
+}
+
+.app .lists .list .task .options button:last-of-type {
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
   background-color: salmon;
@@ -422,6 +427,10 @@ header .container .logo {
 }
 
 .app .lists .list .task .options button:nth-of-type(2) i {
+  transform: translateX(-20%);
+}
+
+.app .lists .list .task .options button:last-of-type i {
   transform: translateX(-30%);
 }
 

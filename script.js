@@ -39,7 +39,7 @@ function chooseColor(colors, color) {
     typeOfColors = "priority";
   }
   for (let i = 0; i < colors.length; i++) {
-    if (colors[i].classList.value.includes(`selected-${typeOfColors}`)) {
+    if (colors[i].classList.contains(`selected-${typeOfColors}`)) {
       colors[i].classList.remove(`selected-${typeOfColors}`);
       color.classList.add(`selected-${typeOfColors}`);
       return color.getAttribute(`data-${typeOfColors}`);
@@ -66,34 +66,35 @@ createListButton.onclick = () => {
 };
 
 function createList(name) {
-  let listId;
   if (name === "") return;
-  emptyPageText.style.transform = "translate(-50%,-50%) scale(0)";
+  hideEmptyPageText()
+  addToListsContainer(name, listTheme);
+  hideListPopup();
+  clearListPopupValues();
+}
+
+function generateIdFromDate() {   
   let formatedDate = Date().slice(0, 24).split(" ").join("");
-  listId = formatedDate.replace(/:/g, "");
+  return formatedDate.replaceAll(':', "");
+}
+
+function addToListsContainer(name, theme) {
+  let listId = generateIdFromDate()
   listsContainer.innerHTML += `
   <div class="list" id="${listId}">
   <div class="header">
-  <h4 style="color:#${listTheme}">${name}</h4>
+  <h4 style="color:#${theme}">${name}</h4>
   <div class="icons">
-  <button class="new-task-button" data-list-id="${listId}" onclick="addTask(this)" title="Add new task">+</button>
-  <button class="delete-list-button" data-list-id="${listId}" onclick="deleteList(this)" title="Delete list">
+  <button class="new-task-button" data-list-id="${listId}"
+  onclick="addTask(this)" title="Add new task">+</button>
+  <button class="delete-list-button" data-list-id="${listId}"
+  onclick="deleteList(this)" title="Delete list">
   <i class="fas fa-trash-alt"></i>
   </button>
   </div>
   </div>
   </div>
   `;
-  hideListPopup();
-  clearListPopupValues();
-}
-
-function deleteList(btn) {
-  let listIdToDelete = btn.getAttribute("data-list-id");
-  document.querySelector(`#${listIdToDelete}`).remove();
-  if (listsContainer.innerText === "") {
-    emptyPageText.style.transform = "translate(-50%,-50%) scale(1)";
-  }
 }
 
 let listIdToAddTask;
@@ -103,6 +104,16 @@ function addTask(clickedBtn) {
   listIdToAddTask = clickedBtn.getAttribute("data-list-id");
   showTaskPopup();
 }
+
+
+function deleteList(btn) {
+  let listIdToDelete = btn.getAttribute("data-list-id");
+  document.querySelector(`#${listIdToDelete}`).remove();
+  if (listsContainer.innerText === "") {
+    showEmptyPageText()
+  }
+}
+
 
 submitTaskButton.onclick = () => {
   if (submitTaskButton.textContent === "Update") {
@@ -114,80 +125,82 @@ submitTaskButton.onclick = () => {
 
 function updateTask() {
   if (taskNameElement.value === "") return;
-  document.querySelector(
-    `#${ToEditTaskId}`
-  ).children[0].firstElementChild.textContent = `${taskNameElement.value}`;
-  document.querySelector(
-    `#${ToEditTaskId}`
-  ).children[1].lastElementChild.textContent = `${
+  
+  let taskId = document.querySelector(`#${ToEditTaskId}`)
+  
+  taskId.children[0].firstElementChild.textContent = `${taskNameElement.value}`;
+  taskId.children[1].lastElementChild.textContent = `${
     taskDateElement.value ? taskDateElement.value : "no-date"
   }`;
-  document.querySelector(
-    `#${ToEditTaskId}`
-  ).children[1].firstElementChild.style.backgroundColor = `${taskPriority}`;
-  document
-    .querySelector(`#${ToEditTaskId}`)
-    .children[2].children[0].setAttribute(
-      "data-task-date",
-      `${taskDateElement.value}`
+  taskId.children[1].firstElementChild.style.backgroundColor = `${taskPriority}`;
+  taskId.children[2].children[0].setAttribute(
+    "data-task-date",
+    `${taskDateElement.value}`
     );
-  document
-    .querySelector(`#${ToEditTaskId}`)
-    .children[2].children[0].setAttribute(
+    taskId.children[2].children[0].setAttribute(
       "data-task-name",
       `${taskNameElement.value}`
-    );
-  document
-    .querySelector(`#${ToEditTaskId}`)
-    .children[2].children[0].setAttribute(
-      "data-task-priority",
-      `${taskPriority}`
-    );
-  hideTaskPopup();
-  clearTaskPopupValues();
-}
-
-function createTask() {
-  let taskId;
-  if (taskNameElement.value === "") return;
-  let formatedDate = Date().slice(0, 24).split(" ").join("");
-  taskId = formatedDate.replace(/:/g, "");
-  document.querySelector(`#${listIdToAddTask}`).innerHTML += `
-    <div class="task" id="${taskId}">
-    <div class="header">
-    <h4>${taskNameElement.value}</h4>
-    <button data-task-id="${taskId}" onclick="showOptionsPopup(this)"><i class="fas fa-ellipsis-h"></i></button>
-    </div>
-    <div class="span-container">
-    <span style="background-color:${taskPriority}"></span>
-    <span class="date">${
-      taskDateElement.value ? taskDateElement.value : "no-date"
-    }</span>
-    </div>
-    <div class="options">
-    <button class="edit-task-button"
-    data-task-id="${taskId}" 
-    data-task-date="${taskDateElement.value}"
-    data-task-name="${taskNameElement.value}"
-    data-task-priority="${taskPriority}"
-    onclick="editTask(this)" title="Edit task">
-    Edit<i class="far fa-edit"></i> 
-    </button>
-    <button class="delete-task-button" data-task-id="${taskId}" onclick="deleteTask(this)" title="Delete task">
-    Delete<i class="fas fa-trash-alt"></i> 
-    </button>
-    </div>
-    </div>
-    `;
-
-  hideTaskPopup();
-  clearTaskPopupValues();
-}
-
+      );
+      taskId.children[2].children[0].setAttribute(
+        "data-task-priority",
+        `${taskPriority}`
+        );
+        hideTaskPopup();
+        clearTaskPopupValues();
+      }
+      
+      function createTask() {
+        if (taskNameElement.value === "") return;
+        let taskId = generateIdFromDate()
+        document.querySelector(`#${listIdToAddTask}`).innerHTML += `
+        <div class="task" id="${taskId}">
+        <div class="header">
+        <h4>${taskNameElement.value}</h4>
+        <button data-task-id="${taskId}" onclick="showOptionsPopup(this)"><i class="fas fa-ellipsis-h"></i></button>
+        </div>
+        <div class="span-container">
+        <span style="background-color:${taskPriority}"></span>
+        <span class="date">${
+          taskDateElement.value ? taskDateElement.value : "no-date"
+        }</span>
+        </div>
+        <div class="options">
+        <button class="edit-task-button"
+        data-task-id="${taskId}" 
+        data-task-date="${taskDateElement.value}"
+        data-task-name="${taskNameElement.value}"
+        data-task-priority="${taskPriority}"
+        onclick="editTask(this)">
+        Edit<i class="far fa-edit"></i> 
+        </button>
+        <button class="duplicate-task-button" data-list-id="${listIdToAddTask}" data-task-id="${taskId}"
+        onclick="duplicateTask(this)">
+        Duplicate<i class="far fa-clone"></i>
+        </button>
+        <button class="delete-task-button" data-task-id="${taskId}" onclick="deleteTask(this)">
+        Delete<i class="fas fa-trash-alt"></i> 
+        </button>
+        </div>
+        </div>
+        `;
+        
+        hideTaskPopup();
+        clearTaskPopupValues();
+      }
+      
 function deleteTask(btn) {
   let ToDeleteTaskId = btn.getAttribute("data-task-id");
   document.querySelector(`#${ToDeleteTaskId}`).remove();
 }
+
+function duplicateTask(btn) {
+  let listId = btn.getAttribute('data-list-id')
+  let originalTaskId = btn.getAttribute('data-task-id')
+  let originalTask = document.querySelector(`#${originalTaskId}`).outerHTML
+  let duplicatedTaskId = generateIdFromDate()
+  let duplicatedTask = originalTask.replaceAll(`${originalTaskId}`,`${duplicatedTaskId}`)
+  document.querySelector(`#${listId}`).innerHTML += duplicatedTask
+} 
 
 let ToEditTaskId;
 function editTask(btn) {
@@ -197,12 +210,6 @@ function editTask(btn) {
   taskNameElement.value = btn.getAttribute("data-task-name");
   taskDateElement.value = btn.getAttribute("data-task-date");
   taskPriority = btn.getAttribute("data-task-priority");
-  console.log(
-    ToEditTaskId,
-    taskPriority,
-    taskNameElement.value,
-    taskDateElement.value
-  );
   priorities.forEach((priority) => {
     let dataPriority = priority.getAttribute("data-priority");
     if (dataPriority === btn.getAttribute("data-task-priority")) {
@@ -221,7 +228,7 @@ closeTaskPopup.onclick = () => {
 
 closeListPopup.onclick = () => {
   if (listsContainer.innerText === "") {
-    emptyPageText.style.transform = "translate(-50%,-50%) scale(1)";
+    showEmptyPageText()
   }
   hideListPopup();
   clearListPopupValues();
@@ -290,4 +297,12 @@ function hideListPopup() {
   overlayDiv.classList.remove("overlay-active");
   createListDiv.style.transform = "translate(-50%,-50%) scale(0)";
   validationListName.style.transform = "scale(0)";
+}
+
+function hideEmptyPageText() {
+  emptyPageText.style.transform = "translate(-50%,-50%) scale(0)";
+}
+
+function showEmptyPageText() {
+  emptyPageText.style.transform = "translate(-50%,-50%) scale(1)";
 }
