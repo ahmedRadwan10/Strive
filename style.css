@@ -333,7 +333,11 @@ header .container .logo {
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 15px 0px;
 }
 
-
+@media screen and (max-width:450px) {
+  .app .lists .list {
+    width: 250px;
+  }
+}
 .app .lists .list .header {
   display: flex;
   justify-content: space-between;
@@ -375,6 +379,12 @@ header .container .logo {
   border-radius: 5px;
   background-color:rgb(220,220,220, 0.4);
   position: relative;
+  cursor: move;
+  transition: 0.2s all ease;
+}
+
+.app .lists .list .task:hover {
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 15px 0px;
 }
 
 .app .lists .list .task .options {
@@ -410,10 +420,6 @@ header .container .logo {
 .app .lists .list .task .options button:first-of-type {
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
-}
-
-.app .lists .list .task .options button:nth-of-type(2) {
-  
 }
 
 .app .lists .list .task .options button:last-of-type {

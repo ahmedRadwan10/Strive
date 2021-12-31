@@ -126,7 +126,7 @@ submitTaskButton.onclick = () => {
 function updateTask() {
   if (taskNameElement.value === "") return;
   
-  let taskId = document.querySelector(`#${ToEditTaskId}`)
+  const taskId = document.querySelector(`#${ToEditTaskId}`)
   
   taskId.children[0].firstElementChild.textContent = `${taskNameElement.value}`;
   taskId.children[1].lastElementChild.textContent = `${
@@ -152,8 +152,9 @@ function updateTask() {
       function createTask() {
         if (taskNameElement.value === "") return;
         let taskId = generateIdFromDate()
-        document.querySelector(`#${listIdToAddTask}`).innerHTML += `
-        <div class="task" id="${taskId}">
+        let listId = document.querySelector(`#${listIdToAddTask}`)
+        listId.innerHTML += `
+        <div class="task" id="${taskId}" draggable="true">
         <div class="header">
         <h4>${taskNameElement.value}</h4>
         <button data-task-id="${taskId}" onclick="showOptionsPopup(this)"><i class="fas fa-ellipsis-h"></i></button>
