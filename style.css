@@ -373,18 +373,23 @@ header .container .logo {
   opacity: 1;
 }
 
+
 .app .lists .list .task {
   padding: 10px;
   margin-bottom:10px ;
   border-radius: 5px;
   background-color:rgb(220,220,220, 0.4);
   position: relative;
-  cursor: move;
   transition: 0.2s all ease;
 }
 
 .app .lists .list .task:hover {
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 15px 0px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 0px 10px 5px;
+}
+
+.app .lists .list .task .header {
+  display: flex;
+  justify-content: space-between;
 }
 
 .app .lists .list .task .options {
@@ -412,8 +417,8 @@ header .container .logo {
 }
 
 .app .lists .list .task .options button:hover {
-  background-color: gray;
   opacity: 0.5;
+  background-color: rgb(128, 128, 128);
   color: aliceblue;
 }
 
@@ -438,11 +443,6 @@ header .container .logo {
 
 .app .lists .list .task .options button:last-of-type i {
   transform: translateX(-30%);
-}
-
-.app .lists .list .task .header {
-  display: flex;
-  justify-content: space-between;
 }
 
 .app .lists .list .task .header button {
@@ -484,6 +484,10 @@ header .container .logo {
   padding: 3px 5px;
   background-color:rgb(200,200,200);
   border-radius: 5px;
+}
+
+.drag-over {
+  opacity: 0.3;
 }
 
 .app  .empty-page {
@@ -534,6 +538,6 @@ header .container .logo {
 
 .overlay-active {
   pointer-events: all;
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: rgba(255, 255, 255, 0.5);
   z-index: 1;
 }

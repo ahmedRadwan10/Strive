@@ -17,6 +17,12 @@ const closeListPopup = document.querySelector("[data-list-close]");
 const validationListName = document.querySelector(".validation-list-name");
 const validationTaskName = document.querySelector(".validation-task-name");
 
+document.onmouseup = () => {
+  document.querySelectorAll(".options").forEach((option) => {
+    option.style.transform = "scale(0)";
+  });
+};
+
 function showListValidationText() {
   if (listNameInput.value === "") {
     validationListName.style.transform = "scale(1)";
@@ -133,6 +139,7 @@ function updateTask() {
     taskDateElement.value ? taskDateElement.value : "no-date"
   }`;
   taskId.children[1].firstElementChild.style.backgroundColor = `${taskPriority}`;
+  taskId.children[1].children[0].setAttribute('data-task-priority', `${taskPriority}`);
   taskId.children[2].children[0].setAttribute(
     "data-task-date",
     `${taskDateElement.value}`
@@ -152,15 +159,24 @@ function updateTask() {
       function createTask() {
         if (taskNameElement.value === "") return;
         let taskId = generateIdFromDate()
-        let listId = document.querySelector(`#${listIdToAddTask}`)
-        listId.innerHTML += `
-        <div class="task" id="${taskId}" draggable="true">
+        let list = document.querySelector(`#${listIdToAddTask}`)
+
+        let taskDiv = document.createElement('div')
+        taskDiv.className = "task"
+        taskDiv.id = `${taskId}`
+        taskDiv.draggable = "true"
+        taskDiv.setAttribute('ondragstart', "dragStart(this)")
+        taskDiv.setAttribute('ondragover', "dragOver(event,this)")
+        taskDiv.setAttribute('ondragleave', "dragLeave(this)")
+        taskDiv.setAttribute('ondrop', "dropped(this)")
+
+        taskDiv.innerHTML = `
         <div class="header">
         <h4>${taskNameElement.value}</h4>
         <button data-task-id="${taskId}" onclick="showOptionsPopup(this)"><i class="fas fa-ellipsis-h"></i></button>
         </div>
         <div class="span-container">
-        <span style="background-color:${taskPriority}"></span>
+        <span data-task-priority="${taskPriority}" style="background-color:${taskPriority}"></span>
         <span class="date">${
           taskDateElement.value ? taskDateElement.value : "no-date"
         }</span>
@@ -182,12 +198,64 @@ function updateTask() {
         Delete<i class="fas fa-trash-alt"></i> 
         </button>
         </div>
-        </div>
         `;
+
+        list.appendChild(taskDiv)
         
         hideTaskPopup();
         clearTaskPopupValues();
-      }
+}
+
+let taskIdToDrag
+function dragStart(taskDiv) {
+  taskIdToDrag = taskDiv.getAttribute('id')
+}
+
+function dragOver(e, taskDiv) {
+  e.preventDefault()
+  taskDiv.classList.add('drag-over')
+
+}
+
+function dragLeave(taskDiv) {
+  taskDiv.classList.remove('drag-over')
+}
+
+let taskIdToDrop
+function dropped(taskDiv) {
+  taskIdToDrop = taskDiv.getAttribute('id')
+  taskDiv.classList.remove('drag-over')
+  doTaskSwapping()
+}
+
+function doTaskSwapping() {
+  let taskElementToDrag = document.querySelector(`#${taskIdToDrag}`)
+  let taskElementToDrop = document.querySelector(`#${taskIdToDrop}`)
+
+  let draggedTaskName = taskElementToDrag.children[0].children[0].textContent 
+  let draggedTaskDate = taskElementToDrag.children[1].children[1].textContent 
+  let draggedTaskPriority = taskElementToDrag.children[1].children[0].getAttribute('data-task-priority') 
+
+  let droppedTaskName = taskElementToDrop.children[0].children[0].textContent 
+  let droppedTaskDate = taskElementToDrop.children[1].children[1].textContent 
+  let droppedTaskPriority = taskElementToDrop.children[1].children[0].getAttribute('data-task-priority') 
+
+  taskElementToDrag.children[0].children[0].textContent = droppedTaskName
+  taskElementToDrag.children[1].children[1].textContent = droppedTaskDate
+  taskElementToDrag.children[1].children[0].setAttribute('data-task-priority', droppedTaskPriority)
+  taskElementToDrag.children[1].children[0].style.backgroundColor = droppedTaskPriority
+  taskElementToDrag.querySelector('.options').children[0].setAttribute('data-task-name', droppedTaskName)
+  taskElementToDrag.querySelector('.options').children[0].setAttribute('data-task-date', droppedTaskDate)
+  taskElementToDrag.querySelector('.options').children[0].setAttribute('data-task-priority', droppedTaskPriority)
+  
+  taskElementToDrop.children[0].children[0].textContent = draggedTaskName
+  taskElementToDrop.children[1].children[1].textContent = draggedTaskDate
+  taskElementToDrop.children[1].children[0].setAttribute('data-task-priority', draggedTaskPriority)
+  taskElementToDrop.children[1].children[0].style.backgroundColor = draggedTaskPriority 
+  taskElementToDrop.querySelector('.options').children[0].setAttribute('data-task-name', draggedTaskName)
+  taskElementToDrop.querySelector('.options').children[0].setAttribute('data-task-date', draggedTaskDate)
+  taskElementToDrop.querySelector('.options').children[0].setAttribute('data-task-priority', draggedTaskPriority)
+}
       
 function deleteTask(btn) {
   let ToDeleteTaskId = btn.getAttribute("data-task-id");
@@ -252,12 +320,6 @@ function setDefaultColor(colors) {
     }
   });
 }
-
-document.onmouseup = () => {
-  document.querySelectorAll(".options").forEach((option) => {
-    option.style.transform = "scale(0)";
-  });
-};
 
 function showOptionsPopup(btn) {
   let optionsTaskId = btn.getAttribute("data-task-id");
