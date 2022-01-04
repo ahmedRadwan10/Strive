@@ -86,8 +86,11 @@ function generateIdFromDate() {
 
 function addToListsContainer(name, theme) {
   let listId = generateIdFromDate()
-  listsContainer.innerHTML += `
-  <div class="list" id="${listId}">
+  let list = document.createElement('div')
+  list.className = "list"
+  list.id = `${listId}`
+  list.setAttribute('ondragover','listDragOver(event, this)')
+  list.innerHTML = `
   <div class="header">
   <h4 style="color:#${theme}">${name}</h4>
   <div class="icons">
@@ -99,8 +102,13 @@ function addToListsContainer(name, theme) {
   </button>
   </div>
   </div>
-  </div>
   `;
+  listsContainer.appendChild(list)
+}
+let listDraggedOver
+function listDragOver(e, listDiv) {
+  e.preventDefault()
+  listDraggedOver = listDiv.getAttribute('id')
 }
 
 let listIdToAddTask;
@@ -165,10 +173,12 @@ function updateTask() {
         taskDiv.className = "task"
         taskDiv.id = `${taskId}`
         taskDiv.draggable = "true"
-        taskDiv.setAttribute('ondragstart', "dragStart(this)")
-        taskDiv.setAttribute('ondragover', "dragOver(event,this)")
-        taskDiv.setAttribute('ondragleave', "dragLeave(this)")
-        taskDiv.setAttribute('ondrop', "dropped(this)")
+        taskDiv.setAttribute('data-list-id', `${listIdToAddTask}`)
+        taskDiv.setAttribute('ondragstart', "taskDragStart(this)")
+        taskDiv.setAttribute('ondragover', "taskDragOver(event,this)")
+        taskDiv.setAttribute('ondragleave', "taskDragLeave(this)")
+        taskDiv.setAttribute('ondrop', "taskDropped(this)")
+        taskDiv.setAttribute('ondragend', "taskDragEnd()")
 
         taskDiv.innerHTML = `
         <div class="header">
@@ -207,28 +217,52 @@ function updateTask() {
 }
 
 let taskIdToDrag
-function dragStart(taskDiv) {
+let listIdToDrag
+function taskDragStart(taskDiv) {
   taskIdToDrag = taskDiv.getAttribute('id')
+  listIdToDrag = taskDiv.getAttribute('data-list-id')
 }
 
-function dragOver(e, taskDiv) {
+function taskDragOver(e, taskDiv) {
   e.preventDefault()
   taskDiv.classList.add('drag-over')
 
 }
 
-function dragLeave(taskDiv) {
+function taskDragLeave(taskDiv) {
   taskDiv.classList.remove('drag-over')
 }
 
 let taskIdToDrop
-function dropped(taskDiv) {
-  taskIdToDrop = taskDiv.getAttribute('id')
+function taskDropped(taskDiv) {
   taskDiv.classList.remove('drag-over')
-  doTaskSwapping()
+  taskIdToDrop = taskDiv.getAttribute('id')
+}
+
+function taskDragEnd() {
+  console.log('task dropped')
+  if (listIdToDrag === listDraggedOver) {
+    doTaskSwapping()
+  } else {
+    dropTaskToNewList()
+  }
+  
+}
+
+function dropTaskToNewList() {
+  console.log('drop Task to new list')
+  let taskOldList = document.querySelector(`#${listIdToDrag}`)
+  let taskNewList = document.querySelector(`#${listDraggedOver}`)
+  let droppedTask = document.querySelector(`#${taskIdToDrag}`)
+  droppedTask.setAttribute('data-list-id', `${listDraggedOver}`)
+  droppedTask.children[2].children[1].setAttribute('data-list-id', `${listDraggedOver}`)
+  taskOldList.removeChild(droppedTask)
+  taskNewList.appendChild(droppedTask)
 }
 
 function doTaskSwapping() {
+  console.log('do task swapping')
+
   let taskElementToDrag = document.querySelector(`#${taskIdToDrag}`)
   let taskElementToDrop = document.querySelector(`#${taskIdToDrop}`)
 
