@@ -17,11 +17,37 @@ const closeListPopup = document.querySelector("[data-list-close]");
 const validationListName = document.querySelector(".validation-list-name");
 const validationTaskName = document.querySelector(".validation-task-name");
 
+let lists = [];
+
+window.onload = () => {
+    lists = JSON.parse(window.localStorage.getItem("lists"));
+}
+
+window.onunload = () => {
+    window.localStorage.setItem("lists", JSON.stringify(lists))
+}
+
 document.onmouseup = () => {
   document.querySelectorAll(".options").forEach((option) => {
     option.style.transform = "scale(0)";
   });
 };
+
+function dispalyDataFromLocalStorage() {
+  lists.forEach((list) => {
+    list.tasks.forEach((task) => {
+
+    })
+  })
+}
+
+function generateList() {
+  
+}
+
+function generateTask() {
+  
+}
 
 function showListValidationText() {
   if (listNameInput.value === "") {
@@ -44,7 +70,7 @@ function chooseColor(colors, color) {
   if (colors === priorities) {
     typeOfColors = "priority";
   }
-  for (let i = 0; i < colors.length; i++) {
+  for (let i in colors) {
     if (colors[i].classList.contains(`selected-${typeOfColors}`)) {
       colors[i].classList.remove(`selected-${typeOfColors}`);
       color.classList.add(`selected-${typeOfColors}`);
@@ -73,61 +99,63 @@ createListButton.onclick = () => {
 
 function createList(name) {
   if (name === "") return;
-  hideEmptyPageText()
+  hideEmptyPageText();
   addToListsContainer(name, listTheme);
   hideListPopup();
   clearListPopupValues();
 }
 
-function generateIdFromDate() {   
+function generateIdFromDate() {
   let formatedDate = Date().slice(0, 24).split(" ").join("");
-  return formatedDate.replaceAll(':', "");
+  return formatedDate.replaceAll(":", "");
 }
 
 function addToListsContainer(name, theme) {
-  let listId = generateIdFromDate()
-  let list = document.createElement('div')
-  list.className = "list"
-  list.id = `${listId}`
-  list.setAttribute('ondragover','listDragOver(event, this)')
+  let listId = generateIdFromDate();
+  let list = document.createElement("div");
+  list.className = "list";
+  list.id = `${listId}`;
+  list.setAttribute("ondragover", "listDragOver(event, this)");
+  lists.push({
+    id: listId,
+    name: name,
+    themeColorCode: theme,
+    tasks: [],
+  });
   list.innerHTML = `
   <div class="header">
   <h4 style="color:#${theme}">${name}</h4>
   <div class="icons">
-  <button class="new-task-button" data-list-id="${listId}"
-  onclick="addTask(this)" title="Add new task">+</button>
-  <button class="delete-list-button" data-list-id="${listId}"
-  onclick="deleteList(this)" title="Delete list">
+  <button class="new-task-button"
+  onclick="addTask(${listId})" title="Add new task">+</button>
+  <button class="delete-list-button"
+  onclick="deleteList(${listId})" title="Delete list">
   <i class="fas fa-trash-alt"></i>
   </button>
   </div>
   </div>
   `;
-  listsContainer.appendChild(list)
+  listsContainer.appendChild(list);
 }
-let listDraggedOver
+let listDraggedOver;
 function listDragOver(e, listDiv) {
-  e.preventDefault()
-  listDraggedOver = listDiv.getAttribute('id')
+  e.preventDefault();
+  listDraggedOver = listDiv.getAttribute("id");
 }
-
 let listIdToAddTask;
-function addTask(clickedBtn) {
+function addTask(listId) {
+  listIdToAddTask = listId.id;
   submitTaskButton.textContent = "Create";
   document.querySelector(".task-popup-h3").textContent = "Creating your task";
-  listIdToAddTask = clickedBtn.getAttribute("data-list-id");
   showTaskPopup();
 }
 
-
-function deleteList(btn) {
-  let listIdToDelete = btn.getAttribute("data-list-id");
-  document.querySelector(`#${listIdToDelete}`).remove();
+function deleteList(listId) {
+  document.querySelector(`#${listId.id}`).remove();
   if (listsContainer.innerText === "") {
-    showEmptyPageText()
+    showEmptyPageText();
   }
 }
-
 
 submitTaskButton.onclick = () => {
   if (submitTaskButton.textContent === "Update") {
@@ -137,185 +165,162 @@ submitTaskButton.onclick = () => {
   }
 };
 
-function updateTask() {
+function createTask() {
   if (taskNameElement.value === "") return;
-  
-  const taskId = document.querySelector(`#${ToEditTaskId}`)
-  
-  taskId.children[0].firstElementChild.textContent = `${taskNameElement.value}`;
-  taskId.children[1].lastElementChild.textContent = `${
-    taskDateElement.value ? taskDateElement.value : "no-date"
-  }`;
-  taskId.children[1].firstElementChild.style.backgroundColor = `${taskPriority}`;
-  taskId.children[1].children[0].setAttribute('data-task-priority', `${taskPriority}`);
-  taskId.children[2].children[0].setAttribute(
-    "data-task-date",
-    `${taskDateElement.value}`
-    );
-    taskId.children[2].children[0].setAttribute(
-      "data-task-name",
-      `${taskNameElement.value}`
-      );
-      taskId.children[2].children[0].setAttribute(
-        "data-task-priority",
-        `${taskPriority}`
-        );
-        hideTaskPopup();
-        clearTaskPopupValues();
-      }
-      
-      function createTask() {
-        if (taskNameElement.value === "") return;
-        let taskId = generateIdFromDate()
-        let list = document.querySelector(`#${listIdToAddTask}`)
+  let taskId = generateIdFromDate();
+  let listId = listIdToAddTask;
 
-        let taskDiv = document.createElement('div')
-        taskDiv.className = "task"
-        taskDiv.id = `${taskId}`
-        taskDiv.draggable = "true"
-        taskDiv.setAttribute('data-list-id', `${listIdToAddTask}`)
-        taskDiv.setAttribute('ondragstart', "taskDragStart(this)")
-        taskDiv.setAttribute('ondragover', "taskDragOver(event,this)")
-        taskDiv.setAttribute('ondragleave', "taskDragLeave(this)")
-        taskDiv.setAttribute('ondrop', "taskDropped(this)")
-        taskDiv.setAttribute('ondragend', "taskDragEnd()")
+  let taskDiv = document.createElement("div");
+  taskDiv.className = "task";
+  taskDiv.id = `${taskId}`;
+  taskDiv.draggable = "true";
+  taskDiv.setAttribute("ondragstart", "taskDragStart(this)");
+  taskDiv.setAttribute("ondragover", "taskDragOver(event,this)");
+  taskDiv.setAttribute("ondragleave", "taskDragLeave(this)");
+  taskDiv.setAttribute("ondrop", "taskDroppedOn(this)");
+  taskDiv.setAttribute("ondragend", "taskDragEnd(this)");
 
-        taskDiv.innerHTML = `
+  lists.forEach((list) => {
+    if (list.id === listId) {
+      list.tasks.push({
+        id: taskId,
+        taskName: taskNameElement.value,
+        taskDate: taskDateElement.value,
+        taskPriority: taskPriority,
+      });
+    }
+  });
+
+  taskDiv.innerHTML = `
         <div class="header">
         <h4>${taskNameElement.value}</h4>
-        <button data-task-id="${taskId}" onclick="showOptionsPopup(this)"><i class="fas fa-ellipsis-h"></i></button>
+        <button onclick="showOptionsPopup(this)"><i class="fas fa-ellipsis-h"></i></button>
         </div>
         <div class="span-container">
-        <span data-task-priority="${taskPriority}" style="background-color:${taskPriority}"></span>
+        <span class="priority" style="background-color:${taskPriority}"></span>
         <span class="date">${
           taskDateElement.value ? taskDateElement.value : "no-date"
         }</span>
         </div>
         <div class="options">
         <button class="edit-task-button"
-        data-task-id="${taskId}" 
-        data-task-date="${taskDateElement.value}"
-        data-task-name="${taskNameElement.value}"
-        data-task-priority="${taskPriority}"
         onclick="editTask(this)">
         Edit<i class="far fa-edit"></i> 
         </button>
-        <button class="duplicate-task-button" data-list-id="${listIdToAddTask}" data-task-id="${taskId}"
+        <button class="duplicate-task-button"
         onclick="duplicateTask(this)">
         Duplicate<i class="far fa-clone"></i>
         </button>
-        <button class="delete-task-button" data-task-id="${taskId}" onclick="deleteTask(this)">
+        <button class="delete-task-button" onclick="deleteTask(this)">
         Delete<i class="fas fa-trash-alt"></i> 
         </button>
         </div>
         `;
-
-        list.appendChild(taskDiv)
-        
-        hideTaskPopup();
-        clearTaskPopupValues();
+  document.querySelector(`#${listId}`).appendChild(taskDiv);
+  hideTaskPopup();
+  clearTaskPopupValues();
 }
 
-let taskIdToDrag
-let listIdToDrag
+let taskIdDragged;
+let taskDraggedFrom;
 function taskDragStart(taskDiv) {
-  taskIdToDrag = taskDiv.getAttribute('id')
-  listIdToDrag = taskDiv.getAttribute('data-list-id')
+  taskIdDragged = taskDiv.getAttribute("id");
+  taskDraggedFrom = taskDiv.parentElement.id;
 }
 
 function taskDragOver(e, taskDiv) {
-  e.preventDefault()
-  taskDiv.classList.add('drag-over')
-
+  e.preventDefault();
+  taskDiv.classList.add("drag-over");
 }
 
 function taskDragLeave(taskDiv) {
-  taskDiv.classList.remove('drag-over')
+  taskDiv.classList.remove("drag-over");
 }
 
-let taskIdToDrop
-function taskDropped(taskDiv) {
-  taskDiv.classList.remove('drag-over')
-  taskIdToDrop = taskDiv.getAttribute('id')
+let taskIdDroppedOn;
+function taskDroppedOn(taskDiv) {
+  taskIdDroppedOn = taskDiv.getAttribute("id");
 }
 
-function taskDragEnd() {
-  console.log('task dropped')
-  if (listIdToDrag === listDraggedOver) {
-    doTaskSwapping()
+function taskDragEnd(taskDiv) {
+  taskDiv.classList.remove("drag-over");
+  if (taskDraggedFrom === listDraggedOver) {
+    doTaskSwapping();
   } else {
-    dropTaskToNewList()
+    dropTaskToNewList();
   }
-  
 }
 
-function dropTaskToNewList() {
-  console.log('drop Task to new list')
-  let taskOldList = document.querySelector(`#${listIdToDrag}`)
-  let taskNewList = document.querySelector(`#${listDraggedOver}`)
-  let droppedTask = document.querySelector(`#${taskIdToDrag}`)
-  droppedTask.setAttribute('data-list-id', `${listDraggedOver}`)
-  droppedTask.children[2].children[1].setAttribute('data-list-id', `${listDraggedOver}`)
-  taskOldList.removeChild(droppedTask)
-  taskNewList.appendChild(droppedTask)
-}
+function dropTaskToNewList() {}
 
 function doTaskSwapping() {
-  console.log('do task swapping')
-
-  let taskElementToDrag = document.querySelector(`#${taskIdToDrag}`)
-  let taskElementToDrop = document.querySelector(`#${taskIdToDrop}`)
-
-  let draggedTaskName = taskElementToDrag.children[0].children[0].textContent 
-  let draggedTaskDate = taskElementToDrag.children[1].children[1].textContent 
-  let draggedTaskPriority = taskElementToDrag.children[1].children[0].getAttribute('data-task-priority') 
-
-  let droppedTaskName = taskElementToDrop.children[0].children[0].textContent 
-  let droppedTaskDate = taskElementToDrop.children[1].children[1].textContent 
-  let droppedTaskPriority = taskElementToDrop.children[1].children[0].getAttribute('data-task-priority') 
-
-  taskElementToDrag.children[0].children[0].textContent = droppedTaskName
-  taskElementToDrag.children[1].children[1].textContent = droppedTaskDate
-  taskElementToDrag.children[1].children[0].setAttribute('data-task-priority', droppedTaskPriority)
-  taskElementToDrag.children[1].children[0].style.backgroundColor = droppedTaskPriority
-  taskElementToDrag.querySelector('.options').children[0].setAttribute('data-task-name', droppedTaskName)
-  taskElementToDrag.querySelector('.options').children[0].setAttribute('data-task-date', droppedTaskDate)
-  taskElementToDrag.querySelector('.options').children[0].setAttribute('data-task-priority', droppedTaskPriority)
-  
-  taskElementToDrop.children[0].children[0].textContent = draggedTaskName
-  taskElementToDrop.children[1].children[1].textContent = draggedTaskDate
-  taskElementToDrop.children[1].children[0].setAttribute('data-task-priority', draggedTaskPriority)
-  taskElementToDrop.children[1].children[0].style.backgroundColor = draggedTaskPriority 
-  taskElementToDrop.querySelector('.options').children[0].setAttribute('data-task-name', draggedTaskName)
-  taskElementToDrop.querySelector('.options').children[0].setAttribute('data-task-date', draggedTaskDate)
-  taskElementToDrop.querySelector('.options').children[0].setAttribute('data-task-priority', draggedTaskPriority)
+  console.log({ taskIdDragged }, { taskIdDroppedOn });
 }
-      
+
+function updateTask() {
+  if (taskNameElement.value === "") return;
+
+  let taskObj = findTask(taskToEdit.id);
+  taskToEdit.querySelector("h4").innerHTML = taskNameElement.value;
+  taskToEdit.querySelector(".date").innerHTML = taskDateElement.value
+    ? taskDateElement.value
+    : "no-date";
+  taskToEdit
+    .querySelector(".priority")
+    .setAttribute("style", `background-color:${taskPriority}`);
+
+  taskObj.taskName = taskNameElement.value;
+  taskObj.taskDate = taskDateElement.value;
+  taskObj.taskPriority = taskPriority;
+  hideTaskPopup();
+  clearTaskPopupValues();
+}
+
 function deleteTask(btn) {
-  let ToDeleteTaskId = btn.getAttribute("data-task-id");
-  document.querySelector(`#${ToDeleteTaskId}`).remove();
+  // find task id
+  let taskId = btn.parentElement.parentElement.id;
+  document.querySelector(`#${taskId}`).remove();
+  lists.forEach((list) => {
+    list.tasks.forEach((t, i) => {
+      if (t.id === taskId) list.tasks.splice(i, 1);
+    })
+  })
+}
+
+function findTask(taskId) {
+  let taskObj;
+  lists.forEach((list) => {
+    list.tasks.forEach((t) => {
+      if (t.id === taskId) taskObj = t;
+    });
+  });
+  return taskObj;
 }
 
 function duplicateTask(btn) {
-  let listId = btn.getAttribute('data-list-id')
-  let originalTaskId = btn.getAttribute('data-task-id')
-  let originalTask = document.querySelector(`#${originalTaskId}`).outerHTML
-  let duplicatedTaskId = generateIdFromDate()
-  let duplicatedTask = originalTask.replaceAll(`${originalTaskId}`,`${duplicatedTaskId}`)
-  document.querySelector(`#${listId}`).innerHTML += duplicatedTask
-} 
+  let taskId = btn.parentElement.parentElement.id;
+  listIdToAddTask = document.querySelector(`#${taskId}`).parentElement.id;
+  let taskObj = findTask(taskId);
+  taskNameElement.value = taskObj.taskName;
+  taskDateElement.value = taskObj.taskDate;
+  taskPriority = taskObj.taskPriority;
+  createTask();
+}
 
-let ToEditTaskId;
+let taskToEdit;
 function editTask(btn) {
-  ToEditTaskId = btn.getAttribute("data-task-id");
   submitTaskButton.textContent = "Update";
   document.querySelector(".task-popup-h3").textContent = "Edit Task";
-  taskNameElement.value = btn.getAttribute("data-task-name");
-  taskDateElement.value = btn.getAttribute("data-task-date");
-  taskPriority = btn.getAttribute("data-task-priority");
+  let taskId = btn.parentElement.parentElement.id;
+  taskToEdit = document.querySelector(`#${taskId}`);
+  let taskObj = findTask(taskId);
+
+  taskNameElement.value = taskObj.taskName;
+  taskDateElement.value = taskObj.taskDate;
+  taskPriority = taskObj.taskPriority;
   priorities.forEach((priority) => {
     let dataPriority = priority.getAttribute("data-priority");
-    if (dataPriority === btn.getAttribute("data-task-priority")) {
+    if (dataPriority === taskPriority) {
       priority.classList.add("selected-priority");
     } else {
       priority.classList.remove("selected-priority");
@@ -331,7 +336,7 @@ closeTaskPopup.onclick = () => {
 
 closeListPopup.onclick = () => {
   if (listsContainer.innerText === "") {
-    showEmptyPageText()
+    showEmptyPageText();
   }
   hideListPopup();
   clearListPopupValues();
@@ -356,8 +361,8 @@ function setDefaultColor(colors) {
 }
 
 function showOptionsPopup(btn) {
-  let optionsTaskId = btn.getAttribute("data-task-id");
-  document.querySelector(`#${optionsTaskId}`).lastElementChild.style.transform =
+  let taskId = btn.parentElement.parentElement.id;
+  document.querySelector(`#${taskId}`).lastElementChild.style.transform =
     "scale(1)";
 }
 
