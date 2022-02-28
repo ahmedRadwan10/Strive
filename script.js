@@ -16,11 +16,21 @@ const emptyPageText = document.querySelector(".empty-page");
 const closeListPopup = document.querySelector("[data-list-close]");
 const validationListName = document.querySelector(".validation-list-name");
 const validationTaskName = document.querySelector(".validation-task-name");
+const loadingBullets = document.querySelector(".loading");
 
 let lists = [];
 
 window.onload = () => {
-    lists = JSON.parse(window.localStorage.getItem("lists"));
+  lists = JSON.parse(window.localStorage.getItem("lists"));
+  hideEmptyPageText();
+  setTimeout(function () {
+    loadingBullets.style.display = "none";
+    if (lists.length) {
+      dispalyDataFromLocalStorage();
+    } else {
+      showEmptyPageText();
+    }
+  }, 1500);
 }
 
 window.onunload = () => {
@@ -35,18 +45,74 @@ document.onmouseup = () => {
 
 function dispalyDataFromLocalStorage() {
   lists.forEach((list) => {
+    dispalyList(list);
     list.tasks.forEach((task) => {
-
+      displayTask(list, task);
     })
   })
 }
 
-function generateList() {
-  
+function dispalyList(listObj) {
+  let list = document.createElement("div");
+  list.className = "list";
+  list.id = `${listObj.id}`;
+  list.setAttribute("ondragover", "listDragOver(event, this)");
+  list.innerHTML = `
+  <div class="header">
+  <h4 style="color:#${listObj.themeColorCode}">${listObj.name}</h4>
+  <div class="icons">
+  <button class="new-task-button"
+  onclick="addTask(this)" title="Add new task">+</button>
+  <button class="delete-list-button"
+  onclick="deleteList(this)" title="Delete list">
+  <i class="fas fa-trash-alt"></i>
+  </button>
+  </div>
+  </div>
+  `;
+  listsContainer.appendChild(list);
 }
 
-function generateTask() {
-  
+function displayTask(list, task) {
+  let taskId = task.id;
+  let listId = list.id;
+
+  let taskDiv = document.createElement("div");
+  taskDiv.className = "task";
+  taskDiv.id = `${taskId}`;
+  taskDiv.draggable = "true";
+  taskDiv.setAttribute("ondragstart", "taskDragStart(this)");
+  taskDiv.setAttribute("ondragover", "taskDragOver(event,this)");
+  taskDiv.setAttribute("ondragleave", "taskDragLeave(this)");
+  taskDiv.setAttribute("ondrop", "taskDroppedOn(this)");
+  taskDiv.setAttribute("ondragend", "taskDragEnd(this)");
+
+  taskDiv.innerHTML = `
+        <div class="header">
+        <h4>${task.taskName}</h4>
+        <button onclick="showOptionsPopup(this)"><i class="fas fa-ellipsis-h"></i></button>
+        </div>
+        <div class="span-container">
+        <span class="priority" style="background-color:${task.taskPriority}"></span>
+        <span class="date">${
+          task.taskDate ? task.taskDate : "no-date"
+        }</span>
+        </div>
+        <div class="options">
+        <button class="edit-task-button"
+        onclick="editTask(this)">
+        Edit<i class="far fa-edit"></i> 
+        </button>
+        <button class="duplicate-task-button"
+        onclick="duplicateTask(this)">
+        Duplicate<i class="far fa-clone"></i>
+        </button>
+        <button class="delete-task-button" onclick="deleteTask(this)">
+        Delete<i class="fas fa-trash-alt"></i> 
+        </button>
+        </div>
+        `;
+       document.querySelector(`#${listId}`).appendChild(taskDiv);
 }
 
 function showListValidationText() {
@@ -127,9 +193,9 @@ function addToListsContainer(name, theme) {
   <h4 style="color:#${theme}">${name}</h4>
   <div class="icons">
   <button class="new-task-button"
-  onclick="addTask(${listId})" title="Add new task">+</button>
+  onclick="addTask(this)" title="Add new task">+</button>
   <button class="delete-list-button"
-  onclick="deleteList(${listId})" title="Delete list">
+  onclick="deleteList(this)" title="Delete list">
   <i class="fas fa-trash-alt"></i>
   </button>
   </div>
@@ -143,18 +209,22 @@ function listDragOver(e, listDiv) {
   listDraggedOver = listDiv.getAttribute("id");
 }
 let listIdToAddTask;
-function addTask(listId) {
-  listIdToAddTask = listId.id;
+function addTask(btn) {
+  listIdToAddTask = btn.parentElement.parentElement.parentElement.id;
   submitTaskButton.textContent = "Create";
   document.querySelector(".task-popup-h3").textContent = "Creating your task";
   showTaskPopup();
 }
 
-function deleteList(listId) {
-  document.querySelector(`#${listId.id}`).remove();
+function deleteList(btn) {
+  let listId = btn.parentElement.parentElement.parentElement.id;
+  document.querySelector(`#${listId}`).remove();
   if (listsContainer.innerText === "") {
     showEmptyPageText();
   }
+  lists.forEach((list, i) => {
+      if (list.id === listId) lists.splice(i, 1);
+  })
 }
 
 submitTaskButton.onclick = () => {
