@@ -21,19 +21,25 @@ const loadingBullets = document.querySelector(".loading");
 
 let lists = [];
 window.onload = () => {
-  lists = JSON.parse(window.localStorage.getItem("lists")) || [] ;
+  lists = JSON.parse(window.localStorage.getItem("lists")) || [];
   hideEmptyPageText();
-  setTimeout(function () {
-    loadingBullets.style.display = "none";
-    if (lists.length) {
+  loadingBullets.style.display = "none";
+  if (lists.length) {
       dispalyDataFromLocalStorage();
     } else {
       showEmptyPageText();
     }
-  }, 1500);
+  // setTimeout(function () {
+  //   loadingBullets.style.display = "none";
+  //   if (lists.length) {
+  //     dispalyDataFromLocalStorage();
+  //   } else {
+  //     showEmptyPageText();
+  //   }
+  // }, 1500);
 }
 
-window.onunload = () => {
+function updateLocalStorage() {
     window.localStorage.setItem("lists", JSON.stringify(lists))
 }
 
@@ -47,7 +53,7 @@ function dispalyDataFromLocalStorage() {
   lists.forEach((list) => {
     dispalyList(list);
     list.tasks.forEach((task) => {
-      displayTask(list, task);
+      displayTasks(list, task);
     })
   })
 }
@@ -73,7 +79,7 @@ function dispalyList(listObj) {
   listsContainer.appendChild(list);
 }
 
-function displayTask(list, task) {
+function displayTasks(list, task) {
   let taskId = task.id;
   let listId = list.id;
 
@@ -159,12 +165,34 @@ priorities.forEach((priority) => {
   };
 });
 
+function sortListTasks(listId) {
+  lists.forEach((list) => {
+    if (list.id === listId) {
+      let greenTasks = [];
+      let orangeTasks = [];
+      let redTasks = [];
+      list.tasks.forEach((task) => {
+        if (task.taskPriority === "green") greenTasks.push(task);
+        if (task.taskPriority === "orange") orangeTasks.push(task);
+        if (task.taskPriority === "red") redTasks.push(task);
+      })
+      // console.log(redTasks, orangeTasks, greenTasks)
+      list.tasks = [...redTasks, ...orangeTasks, ...greenTasks];
+      // console.log(list)
+    }
+  })
+}
+
+
 createListButton.onclick = () => {
   createList(listNameInput.value);
 };
 
 function createList(name) {
-  if (name === "") return;
+  if (name === "") {
+    showListValidationText();
+    return;
+  }
   hideEmptyPageText();
   addToListsContainer(name, listTheme);
   hideListPopup();
@@ -182,12 +210,6 @@ function addToListsContainer(name, theme) {
   list.className = "list";
   list.id = `${listId}`;
   list.setAttribute("ondragover", "listDragOver(event, this)");
-  lists.push({
-    id: listId,
-    name: name,
-    themeColorCode: theme,
-    tasks: [],
-  });
   list.innerHTML = `
   <div class="header">
   <h4 style="color:#${theme}">${name}</h4>
@@ -202,6 +224,13 @@ function addToListsContainer(name, theme) {
   </div>
   `;
   listsContainer.appendChild(list);
+  lists.push({
+    id: listId,
+    name: name,
+    themeColorCode: theme,
+    tasks: [],
+  });
+  updateLocalStorage();
 }
 let listDraggedOver;
 function listDragOver(e, listDiv) {
@@ -223,8 +252,9 @@ function deleteList(btn) {
     showEmptyPageText();
   }
   lists.forEach((list, i) => {
-      if (list.id === listId) lists.splice(i, 1);
-  })
+    if (list.id === listId) lists.splice(i, 1);
+  });
+  updateLocalStorage();
 }
 
 submitTaskButton.onclick = () => {
@@ -236,7 +266,10 @@ submitTaskButton.onclick = () => {
 };
 
 function createTask() {
-  if (taskNameElement.value === "") return;
+  if (taskNameElement.value === "") {
+    showTaskValidationText();
+    return;
+  }
   let taskId = generateIdFromDate();
   let listId = listIdToAddTask;
 
@@ -250,17 +283,7 @@ function createTask() {
   taskDiv.setAttribute("ondrop", "taskDroppedOn(this)");
   taskDiv.setAttribute("ondragend", "taskDragEnd(this)");
 
-  lists.forEach((list) => {
-    if (list.id === listId) {
-      list.tasks.push({
-        id: taskId,
-        taskName: taskNameElement.value,
-        taskDate: taskDateElement.value,
-        taskPriority: taskPriority,
-      });
-    }
-  });
-
+  
   taskDiv.innerHTML = `
         <div class="header">
         <h4>${taskNameElement.value}</h4>
@@ -287,8 +310,24 @@ function createTask() {
         </div>
         `;
   document.querySelector(`#${listId}`).appendChild(taskDiv);
-  hideTaskPopup();
-  clearTaskPopupValues();
+  let listObj;
+        lists.forEach((list) => {
+          if (list.id === listId) {
+            listObj = list;
+            list.tasks.push({
+              id: taskId,
+              taskName: taskNameElement.value,
+              taskDate: taskDateElement.value,
+              taskPriority: taskPriority,
+            });
+          }
+        });
+        sortListTasks(listId);
+  updateLocalStorage();
+  document.location.reload(true);
+        hideTaskPopup();
+        clearTaskPopupValues();
+  
 }
 
 let taskIdDragged;
@@ -313,23 +352,19 @@ function taskDroppedOn(taskDiv) {
 }
 
 function taskDragEnd(taskDiv) {
-  taskDiv.classList.remove("drag-over");
-  if (taskDraggedFrom === listDraggedOver) {
-    doTaskSwapping();
-  } else {
+  document.querySelectorAll(".task").forEach((task) => {
+    task.classList.remove("drag-over");
+  });
+  if (taskDraggedFrom !== listDraggedOver) {
     dropTaskToNewList();
   }
 }
 
 function dropTaskToNewList() {}
 
-function doTaskSwapping() {
-  console.log({ taskIdDragged }, { taskIdDroppedOn });
-}
-
 function updateTask() {
   if (taskNameElement.value === "") return;
-
+    
   let taskObj = findTask(taskToEdit.id);
   taskToEdit.querySelector("h4").innerHTML = taskNameElement.value;
   taskToEdit.querySelector(".date").innerHTML = taskDateElement.value
@@ -342,6 +377,9 @@ function updateTask() {
   taskObj.taskName = taskNameElement.value;
   taskObj.taskDate = taskDateElement.value;
   taskObj.taskPriority = taskPriority;
+  sortListTasks(taskToEdit.parentElement.id);
+  updateLocalStorage();
+  document.location.reload(true);
   hideTaskPopup();
   clearTaskPopupValues();
 }
@@ -355,6 +393,7 @@ function deleteTask(btn) {
       if (t.id === taskId) list.tasks.splice(i, 1);
     })
   })
+  updateLocalStorage();
 }
 
 function findTask(taskId) {

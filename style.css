@@ -339,7 +339,6 @@ header .container .logo {
 .app .lists .list .header h4 {
   font-weight: 600;
   max-width: 70%;
-  word-break: break-all;
 }
 
 .app .lists .list .header button {
