@@ -18,10 +18,10 @@ const validationListName = document.querySelector(".validation-list-name");
 const validationTaskName = document.querySelector(".validation-task-name");
 const loadingBullets = document.querySelector(".loading");
 
-let lists = [];
 
+let lists = [];
 window.onload = () => {
-  lists = JSON.parse(window.localStorage.getItem("lists"));
+  lists = JSON.parse(window.localStorage.getItem("lists")) || [] ;
   hideEmptyPageText();
   setTimeout(function () {
     loadingBullets.style.display = "none";
