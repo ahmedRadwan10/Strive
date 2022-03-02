@@ -18,17 +18,20 @@ const validationListName = document.querySelector(".validation-list-name");
 const validationTaskName = document.querySelector(".validation-task-name");
 const loadingBullets = document.querySelector(".loading");
 
-
 let lists = [];
 window.onload = () => {
+  reload();
+};
+
+function reload() {
   lists = JSON.parse(window.localStorage.getItem("lists")) || [];
   hideEmptyPageText();
   loadingBullets.style.display = "none";
   if (lists.length) {
-      dispalyDataFromLocalStorage();
-    } else {
-      showEmptyPageText();
-    }
+    dispalyDataFromLocalStorage();
+  } else {
+    showEmptyPageText();
+  }
   // setTimeout(function () {
   //   loadingBullets.style.display = "none";
   //   if (lists.length) {
@@ -40,7 +43,7 @@ window.onload = () => {
 }
 
 function updateLocalStorage() {
-    window.localStorage.setItem("lists", JSON.stringify(lists))
+  window.localStorage.setItem("lists", JSON.stringify(lists));
 }
 
 document.onmouseup = () => {
@@ -54,8 +57,8 @@ function dispalyDataFromLocalStorage() {
     dispalyList(list);
     list.tasks.forEach((task) => {
       displayTasks(list, task);
-    })
-  })
+    });
+  });
 }
 
 function dispalyList(listObj) {
@@ -99,10 +102,10 @@ function displayTasks(list, task) {
         <button onclick="showOptionsPopup(this)"><i class="fas fa-ellipsis-h"></i></button>
         </div>
         <div class="span-container">
-        <span class="priority" style="background-color:${task.taskPriority}"></span>
-        <span class="date">${
-          task.taskDate ? task.taskDate : "no-date"
-        }</span>
+        <span class="priority" style="background-color:${
+          task.taskPriority
+        }"></span>
+        <span class="date">${task.taskDate ? task.taskDate : "no-date"}</span>
         </div>
         <div class="options">
         <button class="edit-task-button"
@@ -118,7 +121,7 @@ function displayTasks(list, task) {
         </button>
         </div>
         `;
-       document.querySelector(`#${listId}`).appendChild(taskDiv);
+  document.querySelector(`#${listId}`).appendChild(taskDiv);
 }
 
 function showListValidationText() {
@@ -175,14 +178,13 @@ function sortListTasks(listId) {
         if (task.taskPriority === "green") greenTasks.push(task);
         if (task.taskPriority === "orange") orangeTasks.push(task);
         if (task.taskPriority === "red") redTasks.push(task);
-      })
+      });
       // console.log(redTasks, orangeTasks, greenTasks)
       list.tasks = [...redTasks, ...orangeTasks, ...greenTasks];
       // console.log(list)
     }
-  })
+  });
 }
-
 
 createListButton.onclick = () => {
   createList(listNameInput.value);
@@ -283,7 +285,6 @@ function createTask() {
   taskDiv.setAttribute("ondrop", "taskDroppedOn(this)");
   taskDiv.setAttribute("ondragend", "taskDragEnd(this)");
 
-  
   taskDiv.innerHTML = `
         <div class="header">
         <h4>${taskNameElement.value}</h4>
@@ -310,24 +311,21 @@ function createTask() {
         </div>
         `;
   document.querySelector(`#${listId}`).appendChild(taskDiv);
-  let listObj;
-        lists.forEach((list) => {
-          if (list.id === listId) {
-            listObj = list;
-            list.tasks.push({
-              id: taskId,
-              taskName: taskNameElement.value,
-              taskDate: taskDateElement.value,
-              taskPriority: taskPriority,
-            });
-          }
-        });
-        sortListTasks(listId);
+  lists.forEach((list) => {
+    if (list.id === listId) {
+      list.tasks.push({
+        id: taskId,
+        taskName: taskNameElement.value,
+        taskDate: taskDateElement.value,
+        taskPriority: taskPriority,
+      });
+    }
+  });
+  sortListTasks(listId);
   updateLocalStorage();
   document.location.reload(true);
-        hideTaskPopup();
-        clearTaskPopupValues();
-  
+  hideTaskPopup();
+  clearTaskPopupValues();
 }
 
 let taskIdDragged;
@@ -360,11 +358,35 @@ function taskDragEnd(taskDiv) {
   }
 }
 
-function dropTaskToNewList() {}
+function dropTaskToNewList() {
+  //[1] add dragged task to listDraggedOver.
+  let newList = document.querySelector(`#${listDraggedOver}`);
+  let oldList = document.querySelector(`#${taskDraggedFrom}`);
+  let task = document.querySelector(`#${taskIdDragged}`);
+  newList.appendChild(task);
+  //[2] remove dragged task from old list.
+  oldList.remove(task);
+  //[3] update lists.
+  lists.forEach((list) => {
+    if (list.id === listDraggedOver) newList = list;
+    if (list.id === taskDraggedFrom) oldList = list;
+  })
+  oldList.tasks.forEach((t, i) => {
+    if (t.id === taskIdDragged) {
+      oldList.tasks.splice(i, 1)
+      newList.tasks.push(t)
+      sortListTasks(listDraggedOver)
+    } 
+  })
+  //[4] update local storage.
+  updateLocalStorage();
+  //[5] refresh the page.
+  document.location.reload(true);
+}
 
 function updateTask() {
   if (taskNameElement.value === "") return;
-    
+
   let taskObj = findTask(taskToEdit.id);
   taskToEdit.querySelector("h4").innerHTML = taskNameElement.value;
   taskToEdit.querySelector(".date").innerHTML = taskDateElement.value
@@ -391,8 +413,8 @@ function deleteTask(btn) {
   lists.forEach((list) => {
     list.tasks.forEach((t, i) => {
       if (t.id === taskId) list.tasks.splice(i, 1);
-    })
-  })
+    });
+  });
   updateLocalStorage();
 }
 
