@@ -323,7 +323,8 @@ function createTask() {
   });
   sortListTasks(listId);
   updateLocalStorage();
-  document.location.reload(true);
+  listsContainer.innerHTML = ""
+  reload();
   hideTaskPopup();
   clearTaskPopupValues();
 }
@@ -381,7 +382,8 @@ function dropTaskToNewList() {
   //[4] update local storage.
   updateLocalStorage();
   //[5] refresh the page.
-  document.location.reload(true);
+  listsContainer.innerHTML = ""
+  reload();
 }
 
 function updateTask() {
@@ -401,7 +403,8 @@ function updateTask() {
   taskObj.taskPriority = taskPriority;
   sortListTasks(taskToEdit.parentElement.id);
   updateLocalStorage();
-  document.location.reload(true);
+  listsContainer.innerHTML = ""
+  reload();
   hideTaskPopup();
   clearTaskPopupValues();
 }
