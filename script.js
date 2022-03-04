@@ -20,7 +20,7 @@ const loadingBullets = document.querySelector(".loading");
 
 let lists = [];
 window.onload = () => {
-  reload();
+  setTimeout(reload, 1500);
 };
 
 function reload() {
@@ -32,14 +32,6 @@ function reload() {
   } else {
     showEmptyPageText();
   }
-  // setTimeout(function () {
-  //   loadingBullets.style.display = "none";
-  //   if (lists.length) {
-  //     dispalyDataFromLocalStorage();
-  //   } else {
-  //     showEmptyPageText();
-  //   }
-  // }, 1500);
 }
 
 function updateLocalStorage() {
@@ -179,9 +171,7 @@ function sortListTasks(listId) {
         if (task.taskPriority === "orange") orangeTasks.push(task);
         if (task.taskPriority === "red") redTasks.push(task);
       });
-      // console.log(redTasks, orangeTasks, greenTasks)
       list.tasks = [...redTasks, ...orangeTasks, ...greenTasks];
-      // console.log(list)
     }
   });
 }
