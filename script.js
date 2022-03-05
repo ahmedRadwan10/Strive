@@ -32,6 +32,7 @@ function reload() {
   } else {
     showEmptyPageText();
   }
+  checkValidDate();
 }
 
 function updateLocalStorage() {
@@ -313,7 +314,7 @@ function createTask() {
   });
   sortListTasks(listId);
   updateLocalStorage();
-  listsContainer.innerHTML = ""
+  listsContainer.innerHTML = "";
   reload();
   hideTaskPopup();
   clearTaskPopupValues();
@@ -361,18 +362,18 @@ function dropTaskToNewList() {
   lists.forEach((list) => {
     if (list.id === listDraggedOver) newList = list;
     if (list.id === taskDraggedFrom) oldList = list;
-  })
+  });
   oldList.tasks.forEach((t, i) => {
     if (t.id === taskIdDragged) {
-      oldList.tasks.splice(i, 1)
-      newList.tasks.push(t)
-      sortListTasks(listDraggedOver)
-    } 
-  })
+      oldList.tasks.splice(i, 1);
+      newList.tasks.push(t);
+      sortListTasks(listDraggedOver);
+    }
+  });
   //[4] update local storage.
   updateLocalStorage();
   //[5] refresh the page.
-  listsContainer.innerHTML = ""
+  listsContainer.innerHTML = "";
   reload();
 }
 
@@ -393,7 +394,7 @@ function updateTask() {
   taskObj.taskPriority = taskPriority;
   sortListTasks(taskToEdit.parentElement.id);
   updateLocalStorage();
-  listsContainer.innerHTML = ""
+  listsContainer.innerHTML = "";
   reload();
   hideTaskPopup();
   clearTaskPopupValues();
@@ -506,11 +507,13 @@ function clearListPopupValues() {
 function showTaskPopup() {
   overlayDiv.classList.add("overlay-active");
   createTaskDiv.style.transform = "translate(-50%,-50%) scale(1)";
+  return true;
 }
 
 function showListPopup() {
   overlayDiv.classList.add("overlay-active");
   createListDiv.style.transform = "translate(-50%,-50%) scale(1)";
+  return true;
 }
 
 function hideTaskPopup() {
@@ -531,4 +534,22 @@ function hideEmptyPageText() {
 
 function showEmptyPageText() {
   emptyPageText.style.transform = "translate(-50%,-50%) scale(1)";
+}
+
+function checkValidDate() {
+  let currentDate = new Date();
+  lists = JSON.parse(window.localStorage.getItem("lists"))
+  lists.forEach((list) => {
+    list.tasks.forEach((task) => {
+      let comparedDate = new Date(task.taskDate.slice(0, 4), task.taskDate.slice(5, 7) - 1, task.taskDate.slice(8, 10))
+      if (currentDate > comparedDate && task.taskDate !== '') {
+        document.querySelector(`#${task.id}`).querySelector(".date").classList.add("not-valid")
+        if (currentDate.getDate() === comparedDate.getDate() && currentDate.getMonth() === comparedDate.getMonth() && currentDate.getFullYear() === comparedDate.getFullYear()) {
+          document.querySelector(`#${task.id}`).querySelector(".date").classList.remove("not-valid")
+        }
+      } else {
+        document.querySelector(`#${task.id}`).querySelector(".date").classList.remove("not-valid")
+      }
+    })
+  })
 }

@@ -476,6 +476,10 @@ header .container .logo {
   border-radius: 5px;
 }
 
+.not-valid {
+  color: tomato;
+}
+
 .drag-over {
   opacity: 0.3;
 }
