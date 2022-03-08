@@ -20,12 +20,14 @@ const loadingBullets = document.querySelector(".loading");
 
 let lists = [];
 window.onload = () => {
+  overlayDiv.classList.add("overlay-active");
   setTimeout(reload, 1500);
 };
 
 function reload() {
   lists = JSON.parse(window.localStorage.getItem("lists")) || [];
   hideEmptyPageText();
+  overlayDiv.classList.remove("overlay-active");
   loadingBullets.style.display = "none";
   if (lists.length) {
     dispalyDataFromLocalStorage();
