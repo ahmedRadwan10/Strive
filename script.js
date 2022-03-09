@@ -164,11 +164,11 @@ priorities.forEach((priority) => {
 });
 
 function sortListTasks(listId) {
+  let greenTasks = [];
+  let orangeTasks = [];
+  let redTasks = [];
   lists.forEach((list) => {
     if (list.id === listId) {
-      let greenTasks = [];
-      let orangeTasks = [];
-      let redTasks = [];
       list.tasks.forEach((task) => {
         if (task.taskPriority === "green") greenTasks.push(task);
         if (task.taskPriority === "orange") orangeTasks.push(task);
@@ -509,13 +509,11 @@ function clearListPopupValues() {
 function showTaskPopup() {
   overlayDiv.classList.add("overlay-active");
   createTaskDiv.style.transform = "translate(-50%,-50%) scale(1)";
-  return true;
 }
 
 function showListPopup() {
   overlayDiv.classList.add("overlay-active");
   createListDiv.style.transform = "translate(-50%,-50%) scale(1)";
-  return true;
 }
 
 function hideTaskPopup() {
@@ -535,23 +533,66 @@ function hideEmptyPageText() {
 }
 
 function showEmptyPageText() {
+  const emptyPageTexts = [
+    "Focus on being productive instead of busy.",
+    "Do the hard jobs first. The easy jobs will take care of themselves.",
+    "Productivity is being able to do things that you were never able to do before.",
+    "It’s not always that we need to do more but rather that we need to focus on less.",
+    "My goal is no longer to get more done, but rather to have less to do.",
+    "Strive not to be a success, but rather to be of value.",
+    "Sometimes, things may not go your way, but the effort should be there every single night.",
+    "The tragedy in life doesn’t lie in not reaching your goal. The tragedy lies in having no goal to reach.",
+    "If you spend too much time thinking about a thing, you’ll never get it done.",
+    "Until we can manage time, we can manage nothing else.",
+    "The way to get started is to quit talking and begin doing.",
+    "You don’t need a new plan for next year. You need a commitment.",
+    "It’s not that I’m so smart, it’s just that I stay with problems longer.",
+    "Lost time is never found again.",
+    "Action is the foundational key to all success.",
+    "Efficiency is doing things right. Effectiveness is doing the right things.",
+    "We have a strategic plan. It’s called doing things.",
+    "If there are nine rabbits on the ground, if you want to catch one, just focus on one.",
+    "Efficiency is doing better what is already being done.",
+    "Absorb what is useful, reject what is useless, add what is specifically your own.",
+  ];
+  let randomIndex = Math.floor(Math.random() * emptyPageTexts.length);
+  emptyPageText.querySelector(
+    "p"
+  ).innerHTML = `<span>${emptyPageTexts[randomIndex]}<span/>`;
   emptyPageText.style.transform = "translate(-50%,-50%) scale(1)";
 }
 
 function checkValidDate() {
   let currentDate = new Date();
-  lists = JSON.parse(window.localStorage.getItem("lists"))
+  lists = JSON.parse(window.localStorage.getItem("lists"));
   lists.forEach((list) => {
     list.tasks.forEach((task) => {
-      let comparedDate = new Date(task.taskDate.slice(0, 4), task.taskDate.slice(5, 7) - 1, task.taskDate.slice(8, 10))
-      if (currentDate > comparedDate && task.taskDate !== '') {
-        document.querySelector(`#${task.id}`).querySelector(".date").classList.add("not-valid")
-        if (currentDate.getDate() === comparedDate.getDate() && currentDate.getMonth() === comparedDate.getMonth() && currentDate.getFullYear() === comparedDate.getFullYear()) {
-          document.querySelector(`#${task.id}`).querySelector(".date").classList.remove("not-valid")
+      let comparedDate = new Date(
+        task.taskDate.slice(0, 4),
+        task.taskDate.slice(5, 7) - 1,
+        task.taskDate.slice(8, 10)
+      );
+      if (currentDate > comparedDate && task.taskDate !== "") {
+        document
+          .querySelector(`#${task.id}`)
+          .querySelector(".date")
+          .classList.add("not-valid");
+        if (
+          currentDate.getDate() === comparedDate.getDate() &&
+          currentDate.getMonth() === comparedDate.getMonth() &&
+          currentDate.getFullYear() === comparedDate.getFullYear()
+        ) {
+          document
+            .querySelector(`#${task.id}`)
+            .querySelector(".date")
+            .classList.remove("not-valid");
         }
       } else {
-        document.querySelector(`#${task.id}`).querySelector(".date").classList.remove("not-valid")
+        document
+          .querySelector(`#${task.id}`)
+          .querySelector(".date")
+          .classList.remove("not-valid");
       }
-    })
-  })
+    });
+  });
 }
