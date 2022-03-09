@@ -503,8 +503,9 @@ header .container .logo {
 
 
 .app  .empty-page p {
-  width: 80%;
+  width: 90%;
   margin: 0 auto;
+  font-style: italic;
 }
 
 @media screen and (max-width:450px) {
@@ -515,13 +516,6 @@ header .container .logo {
   .app  .empty-page p {
     width: 90%;
   }
-}
-.app  .empty-page span {
-  font-size: 2.4rem;
-  font-weight: bold;
-  background: -webkit-linear-gradient(90deg, #09009f, #00ff95 80%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 /* end app section */
 

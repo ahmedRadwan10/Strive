@@ -558,7 +558,7 @@ function showEmptyPageText() {
   let randomIndex = Math.floor(Math.random() * emptyPageTexts.length);
   emptyPageText.querySelector(
     "p"
-  ).innerHTML = `<span>${emptyPageTexts[randomIndex]}<span/>`;
+  ).innerHTML = `"${emptyPageTexts[randomIndex]}"`;
   emptyPageText.style.transform = "translate(-50%,-50%) scale(1)";
 }
 
