@@ -2,7 +2,6 @@ import { List, displayList, insertList, listIdToAddTask } from "./list.js";
 import { Task, insertTask, displayTasks, updateTask, checkValidDate } from "./task.js";
 import { hideEmptyPageText, showEmptyPageText } from "./emptyPageText.js";
 import {
-  showTaskPopup,
   hideTaskPopup,
   choosePriority,
   clearTaskPopupValues,
@@ -107,7 +106,6 @@ createListButton.onclick = () => {
   insertList(new List(listName, listTheme));
   hideListPopup();
   clearListPopupValues();
-  console.log(lists)
 };
 
 // Tasks

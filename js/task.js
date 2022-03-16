@@ -1,27 +1,34 @@
 import { sortListTasks, listDraggedOver } from "./list.js";
-import { lists, taskNameElement, taskDateElement, priorities, submitTaskButton, reload, listsContainer } from "./script.js";
+import {
+  lists,
+  taskNameElement,
+  taskDateElement,
+  priorities,
+  submitTaskButton,
+  reload,
+} from "./script.js";
 import { choosePriority, showTaskPopup } from "./taskPopup.js";
 
 export class Task {
-    constructor(id, name, date, priority) {
-        this.id = id;
-        this.name = name;
-        this.date = date;
-        this.priority = priority;
-    }
-    edit(name, date, priority) {
-        this.name = name;
-        this.date = date;
-        this.priority = priority;
-    }
+  constructor(id, name, date, priority) {
+    this.id = id;
+    this.name = name;
+    this.date = date;
+    this.priority = priority;
+  }
+  edit(name, date, priority) {
+    this.name = name;
+    this.date = date;
+    this.priority = priority;
+  }
 }
 
 export function insertTask(listObj, taskName, taskDate, taskPriority) {
-    listObj.addTask(taskName, taskDate, taskPriority)
-    displayTasks(listObj);
-    sortListTasks(listObj.id)
-    window.localStorage.setItem("lists", JSON.stringify(lists));
-    reload();
+  listObj.addTask(taskName, taskDate, taskPriority);
+  displayTasks(listObj);
+  sortListTasks(listObj.id);
+  window.localStorage.setItem("lists", JSON.stringify(lists));
+  reload();
 }
 
 let listObjToEditTask;
@@ -29,16 +36,16 @@ let taskIndexToEdit;
 let taskIdDragged;
 let taskDraggedFrom;
 export function displayTasks(listObj, taskID = listObj.generateIdFromDate()) {
-    let taskId = taskID;
-    let listId = listObj.id;
-    let taskIndex = listObj.findTaskIndex(taskId);
-    let taskObj = listObj.tasks[taskIndex];
+  let taskId = taskID;
+  let listId = listObj.id;
+  let taskIndex = listObj.findTaskIndex(taskId);
+  let taskObj = listObj.tasks[taskIndex];
 
-    let taskDiv = document.createElement("div");
-    taskDiv.className = "task";
-    taskDiv.id = `${taskId}`;
-    taskDiv.draggable = "true";
-    taskDiv.innerHTML = `
+  let taskDiv = document.createElement("div");
+  taskDiv.className = "task";
+  taskDiv.id = `${taskId}`;
+  taskDiv.draggable = "true";
+  taskDiv.innerHTML = `
           <div class="header">
           <h4>${taskObj.name}</h4>
           <button class="options-btn"><i class="fas fa-ellipsis-h"></i></button>
@@ -60,68 +67,66 @@ export function displayTasks(listObj, taskID = listObj.generateIdFromDate()) {
           Delete<i class="fas fa-trash-alt"></i> 
           </button>
           </div>
+          <div class="line"></div>
           `;
-    document.querySelector(`#${listId}`).appendChild(taskDiv);
+  
+  document.querySelector(`#${listId}`).appendChild(taskDiv);
 
-    let optionsBtn = taskDiv.querySelector(".options-btn");
-    optionsBtn.onclick = () => {
-         taskDiv.lastElementChild.style.transform = "scale(1)";
-    }
+  let optionsBtn = taskDiv.querySelector(".options-btn");
+  optionsBtn.onclick = () => {
+    taskDiv.querySelector(".options").style.transform = "scale(1)";
+  };
 
-    let editTaskBtn = taskDiv.querySelector(".edit-task-button");
-    editTaskBtn.onclick = () => {
-        taskNameElement.value = taskObj.name;
-        taskDateElement.value = taskObj.date;
-        let priorityElement = document.querySelector(`[data-priority=${taskObj.priority}]`)
-        choosePriority(priorities, priorityElement)
-        submitTaskButton.textContent = "Save";
-        showTaskPopup();
-        listObjToEditTask = listObj;
-        taskIndexToEdit = taskIndex;
-    }
+  let editTaskBtn = taskDiv.querySelector(".edit-task-button");
+  editTaskBtn.onclick = () => {
+    taskNameElement.value = taskObj.name;
+    taskDateElement.value = taskObj.date;
+    let priorityElement = document.querySelector(
+      `[data-priority=${taskObj.priority}]`
+    );
+    choosePriority(priorities, priorityElement);
+    submitTaskButton.textContent = "Save";
+    showTaskPopup();
+    listObjToEditTask = listObj;
+    taskIndexToEdit = taskIndex;
+  };
 
-    let duplicateTaskBtn = taskDiv.querySelector(".duplicate-task-button");
-    duplicateTaskBtn.onclick = () => {
-        listObj.duplicateTask(taskId);
-        sortListTasks(listObj.id)
-        window.localStorage.setItem("lists", JSON.stringify(lists));
-        reload();
-    }
-
-    let deleteTaskBtn = taskDiv.querySelector(".delete-task-button");
-    deleteTaskBtn.onclick = () => {
-        listObj.deleteTask(taskId);
-        window.localStorage.setItem("lists", JSON.stringify(lists));
-        reload();
-    }
-
-
-    taskDiv.ondragstart = () => {
-        taskIdDragged = taskDiv.id;
-        taskDraggedFrom = taskDiv.parentElement.id;
-    }
-
-    taskDiv.ondragover = (e) => {
-        e.preventDefault();
-    }
-
-    taskDiv.ondragend = () => {
-        if (taskDraggedFrom !== listDraggedOver) {
-            dropTaskToNewList();
-        }
-    }
-
-}
-export function updateTask(taskPriority) {
-    let taskObj = listObjToEditTask.tasks[taskIndexToEdit];
-    taskObj.edit(
-        taskNameElement.value,
-        taskDateElement.value,
-        taskPriority
-    )
-    sortListTasks(listObjToEditTask.id)
+  let duplicateTaskBtn = taskDiv.querySelector(".duplicate-task-button");
+  duplicateTaskBtn.onclick = () => {
+    listObj.duplicateTask(taskId);
+    sortListTasks(listObj.id);
     window.localStorage.setItem("lists", JSON.stringify(lists));
     reload();
+  };
+
+  let deleteTaskBtn = taskDiv.querySelector(".delete-task-button");
+  deleteTaskBtn.onclick = () => {
+    listObj.deleteTask(taskId);
+    window.localStorage.setItem("lists", JSON.stringify(lists));
+    reload();
+  };
+
+  taskDiv.ondragstart = () => {
+    taskIdDragged = taskDiv.id;
+    taskDraggedFrom = taskDiv.parentElement.id;
+  };
+
+  taskDiv.ondragover = (e) => {
+    e.preventDefault();
+  };
+
+  taskDiv.ondragend = () => {
+    if (taskDraggedFrom !== listDraggedOver) {
+      dropTaskToNewList();
+    }
+  };
+}
+export function updateTask(taskPriority) {
+  let taskObj = listObjToEditTask.tasks[taskIndexToEdit];
+  taskObj.edit(taskNameElement.value, taskDateElement.value, taskPriority);
+  sortListTasks(listObjToEditTask.id);
+  window.localStorage.setItem("lists", JSON.stringify(lists));
+  reload();
 }
 
 export function checkValidDate() {
@@ -186,4 +191,4 @@ function dropTaskToNewList() {
 }
 
 
-
+export { taskIdDragged, taskDraggedFrom };

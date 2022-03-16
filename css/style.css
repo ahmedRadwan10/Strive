@@ -81,9 +81,8 @@ header .container .logo {
 
 .app .create-list-popup .list-popup-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-  margin-bottom: 50px;
 }
 
 .app .create-list-popup .list-popup-header span {
@@ -323,6 +322,7 @@ header .container .logo {
   border-radius: 5px;
   margin: 20px;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 15px 0px;
+  position: relative;
 }
 
 @media screen and (max-width: 450px) {
@@ -366,11 +366,22 @@ header .container .logo {
 
 .app .lists .list .task {
   padding: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   border-radius: 5px;
   background-color: rgb(220, 220, 220, 0.4);
   position: relative;
   transition: 0.2s all ease;
+}
+
+.app .lists .list .task .line {
+  position: absolute;
+  top: calc(100% + 6px);
+  width: calc(100% - 20px);
+  height: 3px;
+  border-radius: 10px;
+  background-color: grey;
+  opacity: 0.7;
+  transform: scale(0);
 }
 
 .app .lists .list .task:hover {
