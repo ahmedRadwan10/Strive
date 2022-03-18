@@ -365,6 +365,7 @@ header .container .logo {
 }
 
 .app .lists .list .task {
+  min-height: 85px;
   padding: 10px;
   margin-bottom: 15px;
   border-radius: 5px;
@@ -373,7 +374,18 @@ header .container .logo {
   transition: 0.2s all ease;
 }
 
-.app .lists .list .task .line {
+.app .lists .list .task .line-before {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  width: calc(100% - 20px);
+  height: 3px;
+  border-radius: 10px;
+  background-color: grey;
+  opacity: 0.7;
+  transform: scale(0);
+}
+
+.app .lists .list .task .line-after {
   position: absolute;
   top: calc(100% + 6px);
   width: calc(100% - 20px);

@@ -99,35 +99,55 @@ export function displayList(listObj) {
 }
 
 function showTheLine(listId) {
-
   let taskElements = document.querySelectorAll(".task");
   taskElements.forEach((taskElement) => {
-    taskElement.querySelector(".line").style.transform = "scale(0)";
+    taskElement.querySelector(".line-after").style.transform = "scale(0)";
+    taskElement.querySelector(".line-before").style.transform = "scale(0)";
   });
 
   let listIndex = List.find(listId);
   let listObj = lists[listIndex];
 
-    let taskElement = document.querySelector(`#${taskIdDragged}`);
-    let taskPriority = taskElement
-      .querySelector(".priority")
-      .getAttribute("style")
-      .slice(17);
+  let listIndexOfDraggedT = List.find(taskDraggedFrom);
+  let listObjOfDraggedT = lists[listIndexOfDraggedT];
 
-    if (listId !== taskDraggedFrom) {
-      listObj.tasks.forEach((task) => {
-        if (task.priority === taskPriority) {
-          let taskElements = document.querySelectorAll(".task");
-          taskElements.forEach((taskElement) => {
-            taskElement.querySelector(".line").style.transform = "scale(0)";
-          });
-          document
-            .querySelector(`#${task.id}`)
-            .querySelector(".line").style.transform = "scale(1)";
+  let draggedTaskIndex = listObjOfDraggedT.findTaskIndex(taskIdDragged);
+  let draggedTaskObj = listObjOfDraggedT.tasks[draggedTaskIndex]
+  let draggedTaskPriority = draggedTaskObj.priority;
+
+  if (listId !== taskDraggedFrom) {
+    let samePriorityTasks = [draggedTaskObj];
+    listObj.tasks.forEach((task) => {
+      if (task.priority === draggedTaskPriority) {
+        samePriorityTasks.push(task)
+      }
+    });
+    if (listObj.tasks.length === 0) return;
+    if (samePriorityTasks.length === 1) {
+      document.querySelector(`#${listObj.tasks.at(-1).id}`).querySelector(".line-after").style.transform = "scale(1)"
+      return;
+    }
+  
+    let samePriorityTasksSorted = bubbleSort(samePriorityTasks)
+    // task index after sorting the samePriorityTasks.
+    if (samePriorityTasksSorted.length > 1) {   
+      samePriorityTasksSorted.forEach((task, i) => {
+        if (task.id === draggedTaskObj.id) {
+          if (i !== 0) {
+            document.querySelector(`#${samePriorityTasksSorted[i - 1].id}`).querySelector(".line-after").style.transform = "scale(1)"
+          }
+          if (i === 0 && samePriorityTasksSorted[i + 1].date === draggedTaskObj.date) {
+            document.querySelector(`#${samePriorityTasksSorted[i + 1].id}`).querySelector(".line-after").style.transform = "scale(1)"
+          }
+          if (i === 0 && samePriorityTasksSorted[i + 1].date !== draggedTaskObj.date) {
+            document.querySelector(`#${samePriorityTasksSorted[i + 1].id}`).querySelector(".line-before").style.transform = "scale(1)"
+          }
         }
-      });
+      })
     }
   }
+}
+  
 
 
 export function sortListTasks(listId) {
@@ -137,13 +157,41 @@ export function sortListTasks(listId) {
   lists.forEach((list) => {
     if (list.id === listId) {
       list.tasks.forEach((task) => {
-        if (task.priority === "green") greenTasks.push(task);
-        if (task.priority === "orange") orangeTasks.push(task);
-        if (task.priority === "red") redTasks.push(task);
-      });
-      list.tasks = [...redTasks, ...orangeTasks, ...greenTasks];
+          if (task.priority === "green") greenTasks.push(task)
+          if (task.priority === "orange") orangeTasks.push(task)
+          if (task.priority === "red") redTasks.push(task)
+      })
+      list.tasks = [...bubbleSort(redTasks), ...bubbleSort(orangeTasks), ...bubbleSort(greenTasks)];
     }
   });
+}
+
+// Sort tasks based on DATE.
+function bubbleSort(arr){
+  let noSwaps;
+  for(let i = arr.length; i > 0; i--){
+    noSwaps = true;
+    for (let j = 0; j < i - 1; j++){
+      let currentDate = new Date(
+        arr[j].date.slice(0, 4),
+        arr[j].date.slice(5, 7) - 1,
+        arr[j].date.slice(8, 10)
+      );
+      let comparedDate = new Date(
+        arr[j + 1].date.slice(0, 4),
+        arr[j + 1].date.slice(5, 7) - 1,
+        arr[j + 1].date.slice(8, 10)
+      );
+      if(currentDate > comparedDate){
+        let temp = arr[j];
+        arr[j] = arr[j+1];
+        arr[j+1] = temp;
+        noSwaps = false;         
+      }
+    }
+    if(noSwaps) break;
+  }
+  return arr;
 }
 
 export { listIdToAddTask, listDraggedOver };

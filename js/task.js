@@ -54,7 +54,7 @@ export function displayTasks(listObj, taskID = listObj.generateIdFromDate()) {
           <span class="priority" style="background-color:${
             taskObj.priority
           }"></span>
-          <span class="date">${taskObj.date ? taskObj.date : "no-date"}</span>
+          <span class="date">${taskObj.date}</span>
           </div>
           <div class="options">
           <button class="edit-task-button">
@@ -67,9 +67,10 @@ export function displayTasks(listObj, taskID = listObj.generateIdFromDate()) {
           Delete<i class="fas fa-trash-alt"></i> 
           </button>
           </div>
-          <div class="line"></div>
+          <div class="line-before"></div>
+          <div class="line-after"></div>
           `;
-  
+  if (taskObj.date === "") taskDiv.querySelector(".date").remove()
   document.querySelector(`#${listId}`).appendChild(taskDiv);
 
   let optionsBtn = taskDiv.querySelector(".options-btn");
@@ -154,11 +155,6 @@ export function checkValidDate() {
             .querySelector(".date")
             .classList.remove("not-valid");
         }
-      } else {
-        document
-          .querySelector(`#${task.id}`)
-          .querySelector(".date")
-          .classList.remove("not-valid");
       }
     });
   });
