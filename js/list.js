@@ -28,6 +28,16 @@ export class List {
     let taskIndex = this.findTaskIndex(taskId);
     this.tasks.splice(taskIndex, 1);
   }
+  hideTask(taskId) {
+    let taskIndex = this.findTaskIndex(taskId);
+    let taskObj = this.tasks[taskIndex];
+    taskObj.hidden = true;
+  }
+  showTask(taskId) {
+    let taskIndex = this.findTaskIndex(taskId);
+    let taskObj = this.tasks[taskIndex];
+    taskObj.hidden = false;
+  }
   duplicateTask(taskId) {
     let taskIndex = this.findTaskIndex(taskId);
     let taskObj = this.tasks[taskIndex];
@@ -73,8 +83,26 @@ export function displayList(listObj) {
     </button>
     </div>
     </div>
+    <div class="shown-tasks"></div>
+    <div class="hidden-tasks">
+    <div class="hidden-tasks-header">
+    <p>Hidden</p>
+    <div><img class="show-and-hide" src="/images/eye.png" alt="hide"><span class="hidden-number">0</span></div>
+    </div>
+    <div class="tasks"></div>
+    </div>
     `;
   listsContainer.appendChild(list);
+  let numOfHidden = 0;
+    listObj.tasks.forEach((task) => {
+      if (task.hidden === true) {
+        numOfHidden++;
+      }
+    })
+    list.querySelector(".hidden-number").innerHTML = numOfHidden;
+  if (numOfHidden > 0) {
+    list.querySelector(".show-and-hide").style.transform = "scale(1)"
+  }
   let addTaskBtn = list.querySelector(".new-task-button");
   addTaskBtn.onclick = () => {
     showTaskPopup();
@@ -90,6 +118,19 @@ export function displayList(listObj) {
     lists.splice(listIndex, 1);
     window.localStorage.setItem("lists", JSON.stringify(lists));
   };
+  let showAndHideBtn = list.querySelector(".show-and-hide");
+  let show = true;
+  showAndHideBtn.onclick = () => {
+    if (show) {
+      list.querySelector(".hidden-tasks .tasks").style.display = "block";
+      list.querySelector(".show-and-hide").src = "./images/visibility.png"
+      show = false;
+    } else {
+      list.querySelector(".hidden-tasks .tasks").style.display = "none";
+      list.querySelector(".show-and-hide").src = "./images/eye.png"
+      show = true;
+    }
+  };
 
   list.ondragover = (e) => {
     e.preventDefault();
@@ -99,7 +140,7 @@ export function displayList(listObj) {
 }
 
 function showTheLine(listId) {
-  let taskElements = document.querySelectorAll(".task");
+  let taskElements = document.querySelectorAll(".tasks .task");
   taskElements.forEach((taskElement) => {
     taskElement.querySelector(".line-after").style.transform = "scale(0)";
     taskElement.querySelector(".line-before").style.transform = "scale(0)";
@@ -124,8 +165,30 @@ function showTheLine(listId) {
     });
     if (listObj.tasks.length === 0) return;
     if (samePriorityTasks.length === 1) {
-      document.querySelector(`#${listObj.tasks.at(-1).id}`).querySelector(".line-after").style.transform = "scale(1)"
-      return;
+      if (draggedTaskObj.priority === "red") {
+        document.querySelector(`#${listObj.tasks[0].id}`).querySelector(".line-before").style.transform = "scale(1)"
+        return;
+      }
+      if (draggedTaskObj.priority === "orange") {
+        let redTasks = [];
+        let greenTasks = [];
+        listObj.tasks.forEach((task) => {
+          if (task.priority === "red") redTasks.push(task);
+          if (task.priority === "green") greenTasks.push(task);
+        })
+        if (redTasks.length > 0) {
+          document.querySelector(`#${redTasks[redTasks.length - 1].id}`).querySelector(".line-after").style.transform = "scale(1)"
+          return;
+        }
+        if (greenTasks.length > 0) {
+          document.querySelector(`#${greenTasks[0].id}`).querySelector(".line-before").style.transform = "scale(1)"
+          return;
+        }
+      }
+      if (draggedTaskObj.priority === "green") {
+        document.querySelector(`#${listObj.tasks.at(-1).id}`).querySelector(".line-after").style.transform = "scale(1)"
+        return;
+      }
     }
   
     let samePriorityTasksSorted = bubbleSort(samePriorityTasks)
@@ -178,11 +241,11 @@ function bubbleSort(arr){
         arr[j].date.slice(8, 10)
       );
       let comparedDate = new Date(
-        arr[j + 1].date.slice(0, 4),
-        arr[j + 1].date.slice(5, 7) - 1,
-        arr[j + 1].date.slice(8, 10)
+        arr[j+1].date.slice(0, 4),
+        arr[j+1].date.slice(5, 7) - 1,
+        arr[j+1].date.slice(8, 10)
       );
-      if(currentDate > comparedDate){
+      if (currentDate > comparedDate) {
         let temp = arr[j];
         arr[j] = arr[j+1];
         arr[j+1] = temp;
@@ -191,7 +254,12 @@ function bubbleSort(arr){
     }
     if(noSwaps) break;
   }
-  return arr;
+  let counter = 0; 
+  arr.forEach((el) => {
+    if (el.date === "") counter++;
+  })
+  if (counter === 0) return arr;
+  else return [...arr.slice(counter), ...arr.slice(0, counter)];
 }
 
 export { listIdToAddTask, listDraggedOver };

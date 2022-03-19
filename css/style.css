@@ -56,7 +56,6 @@ header .container .logo {
 /* end of header */
 
 /* start app section */
-
 .app .create-list-popup {
   width: 400px;
   height: 400px;
@@ -364,6 +363,41 @@ header .container .logo {
   opacity: 1;
 }
 
+.app .lists .list .hidden-tasks .tasks {
+  opacity: 0.5;
+  display: none;
+}
+
+.app .lists .list .hidden-tasks .tasks .task:first-of-type {
+  margin-top: 14px;
+}
+
+.app .lists .list .hidden-tasks-header {
+  color: rgb(220, 220, 220);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.app .lists .list .hidden-tasks-header div{
+  display: flex;
+  align-items: center;
+}
+
+.app .lists .list .hidden-tasks-header img {
+  width: 20px;
+  height: 20px;
+  margin-right: 15px;
+  margin-top: 1.5px;
+  cursor: pointer;
+  opacity: 0.3;
+  transform: scale(0);
+  transition: 0.3s opacity ease;
+}
+
+.app .lists .list .hidden-tasks-header img:hover {
+  opacity: 0.7;
+}
+
 .app .lists .list .task {
   min-height: 85px;
   padding: 10px;
@@ -396,7 +430,7 @@ header .container .logo {
   transform: scale(0);
 }
 
-.app .lists .list .task:hover {
+.app .lists .list .shown-tasks .task:hover {
   box-shadow: rgba(100, 100, 111, 0.2) 0px 0px 10px 5px;
 }
 
@@ -409,7 +443,7 @@ header .container .logo {
   position: absolute;
   top: 30px;
   right: 10px;
-  width: 100px;
+  width: 120px;
   border-radius: 10px;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 0px 20px 5px;
   transform: scale(0);
@@ -420,9 +454,9 @@ header .container .logo {
 }
 
 .app .lists .list .task .options button {
+  padding: 5px 6px;
   display: flex;
   justify-content: space-between;
-  padding: 5px 0 5px 8px;
   cursor: pointer;
   transition: 0.3s all ease;
   border: none;
@@ -446,16 +480,18 @@ header .container .logo {
   background-color: salmon;
   color: white;
 }
-.app .lists .list .task .options button i {
-  margin-right: 5px;
-}
-
-.app .lists .list .task .options button:nth-of-type(2) i {
-  transform: translateX(-20%);
-}
 
 .app .lists .list .task .options button:last-of-type i {
-  transform: translateX(-30%);
+  margin-right: 2px;
+}
+
+.app .lists .list .task .options button:nth-of-type(2) img {
+  width: 17px;
+  height: 17px;
+  margin-right: -1px;
+}
+.app .lists .list .task .options button:nth-of-type(3) i {
+  margin-right: 1.5px;
 }
 
 .app .lists .list .task .header button {

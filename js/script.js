@@ -54,9 +54,11 @@ export function reload() {
     hideEmptyPageText();
     stringLists.forEach((l) => {
       let list = new List(l.name, l.themeCode, l.id);
+      l.tasks.forEach((task) => {
+        list.tasks.push(new Task(task.id, task.name, task.date, task.priority, task.hidden))
+      })
       displayList(list);
       l.tasks.forEach((task) => {
-        list.tasks.push(new Task(task.id, task.name, task.date, task.priority))
         displayTasks(list, task.id)
       })
       lists.push(list)
@@ -129,7 +131,7 @@ closeTaskPopup.onclick = () => {
     }
     
     if (submitTaskButton.textContent === "Save") {
-      updateTask(taskPriority);
+      updateTask();
     } else {
       let listIndex = List.find(listIdToAddTask);
       insertTask(lists[listIndex],
@@ -143,4 +145,4 @@ closeTaskPopup.onclick = () => {
     clearTaskPopupValues();
   };
 
-export { lists };
+export { lists, taskPriority };

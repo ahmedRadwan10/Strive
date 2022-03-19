@@ -10,11 +10,12 @@ import {
 import { choosePriority, showTaskPopup } from "./taskPopup.js";
 
 export class Task {
-  constructor(id, name, date, priority) {
+  constructor(id, name, date, priority, hidden = false) {
     this.id = id;
     this.name = name;
     this.date = date;
     this.priority = priority;
+    this.hidden = hidden;
   }
   edit(name, date, priority) {
     this.name = name;
@@ -60,6 +61,9 @@ export function displayTasks(listObj, taskID = listObj.generateIdFromDate()) {
           <button class="edit-task-button">
           Edit<i class="far fa-edit"></i> 
           </button>
+          <button class="hide-task-button">
+          Hide<img src="./images/visibility.png" alt="hide">
+          </button>
           <button class="duplicate-task-button">
           Duplicate<i class="far fa-clone"></i>
           </button>
@@ -71,7 +75,11 @@ export function displayTasks(listObj, taskID = listObj.generateIdFromDate()) {
           <div class="line-after"></div>
           `;
   if (taskObj.date === "") taskDiv.querySelector(".date").remove()
-  document.querySelector(`#${listId}`).appendChild(taskDiv);
+  if (taskObj.hidden === false) document.querySelector(`#${listId}`).querySelector(".shown-tasks").appendChild(taskDiv);
+  if (taskObj.hidden === true) {
+    document.querySelector(`#${listId} .hidden-tasks .tasks`).appendChild(taskDiv);
+    document.querySelector(`#${taskObj.id} .options .hide-task-button`).innerHTML = "Show<img src='./images/eye.png' alt='hide'>"
+  }
 
   let optionsBtn = taskDiv.querySelector(".options-btn");
   optionsBtn.onclick = () => {
@@ -92,6 +100,18 @@ export function displayTasks(listObj, taskID = listObj.generateIdFromDate()) {
     taskIndexToEdit = taskIndex;
   };
 
+  let hideTaskBtn = taskDiv.querySelector(".hide-task-button");
+  hideTaskBtn.onclick = () => {
+    if (!taskObj.hidden) {
+      listObj.hideTask(taskId);
+      window.localStorage.setItem("lists", JSON.stringify(lists));
+      reload();
+    } else {
+      listObj.showTask(taskId);
+      window.localStorage.setItem("lists", JSON.stringify(lists));
+      reload();
+    }
+  };
   let duplicateTaskBtn = taskDiv.querySelector(".duplicate-task-button");
   duplicateTaskBtn.onclick = () => {
     listObj.duplicateTask(taskId);
@@ -109,7 +129,7 @@ export function displayTasks(listObj, taskID = listObj.generateIdFromDate()) {
 
   taskDiv.ondragstart = () => {
     taskIdDragged = taskDiv.id;
-    taskDraggedFrom = taskDiv.parentElement.id;
+    taskDraggedFrom = taskDiv.parentElement.parentElement.id;
   };
 
   taskDiv.ondragover = (e) => {
@@ -122,9 +142,10 @@ export function displayTasks(listObj, taskID = listObj.generateIdFromDate()) {
     }
   };
 }
-export function updateTask(taskPriority) {
+export function updateTask() {
   let taskObj = listObjToEditTask.tasks[taskIndexToEdit];
-  taskObj.edit(taskNameElement.value, taskDateElement.value, taskPriority);
+  let currentPriority = document.querySelector(".selected-priority").getAttribute("data-priority");
+  taskObj.edit(taskNameElement.value, taskDateElement.value, currentPriority);
   sortListTasks(listObjToEditTask.id);
   window.localStorage.setItem("lists", JSON.stringify(lists));
   reload();
@@ -161,14 +182,8 @@ export function checkValidDate() {
 }
 
 function dropTaskToNewList() {
-  //[1] add dragged task to listDraggedOver.
-  let newList = document.querySelector(`#${listDraggedOver}`);
-  let oldList = document.querySelector(`#${taskDraggedFrom}`);
-  let task = document.querySelector(`#${taskIdDragged}`);
-  newList.appendChild(task);
-  //[2] remove dragged task from old list.
-  oldList.remove(task);
-  //[3] update lists.
+  let newList;
+  let oldList;
   lists.forEach((list) => {
     if (list.id === listDraggedOver) newList = list;
     if (list.id === taskDraggedFrom) oldList = list;
@@ -180,9 +195,9 @@ function dropTaskToNewList() {
       sortListTasks(listDraggedOver);
     }
   });
-  //[4] update local storage.
+  //update local storage.
   window.localStorage.setItem("lists", JSON.stringify(lists));
-  //[5] refresh the page.
+  //refresh the DOM.
   reload();
 }
 
