@@ -87,7 +87,7 @@ export function displayList(listObj) {
     <div class="hidden-tasks">
     <div class="hidden-tasks-header">
     <p>Hidden</p>
-    <div><img class="show-and-hide" src="/images/eye.png" alt="hide"><span class="hidden-number">0</span></div>
+    <div><img class="show-and-hide" src="./images/eye.png" alt="hide"><span class="hidden-number">0</span></div>
     </div>
     <div class="tasks"></div>
     </div>
