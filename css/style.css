@@ -76,6 +76,19 @@ header .container .logo {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+@media screen and (max-width: 450px) {
+  header .container button {
+    position: fixed;
+    bottom: 50px;
+    right: 30px;
+    padding: 10px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 15px 0px;
+    z-index: 999;
+  }
+}
 /* end of header */
 
 /* start app section */
