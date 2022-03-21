@@ -46,6 +46,11 @@ window.onload = () => {
   reload();
 };
 
+window.onresize = () => {
+  if (window.innerWidth <= 667) newList.innerHTML = '<i class="fa-solid fa-plus"></i>';
+  else newList.innerHTML = "New List"
+}
+
 export function reload() {
   listsContainer.innerHTML = "";
   lists = []
