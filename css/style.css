@@ -30,6 +30,29 @@ header .container {
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 15px 0px;
 }
 
+header .container div {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+header .container img {
+  width: 40px;
+  cursor: pointer;
+  margin-left: 40px;
+}
+
+header .container div::after {
+  content: "";
+  position: absolute;
+  left: 110px;
+  width: 2.5px;
+  height: 70%;
+  border-radius: 20px;
+  background-color: grey;
+  opacity: 0.3;
+}
+
 header .container button {
   outline: none;
   border: none;
@@ -184,7 +207,7 @@ header .container .logo {
 
 .app .create-task-popup {
   width: 400px;
-  height: 500px;
+  height: 550px;
   background-color: azure;
   border-radius: 10px;
   padding: 15px 25px;
@@ -236,17 +259,31 @@ header .container .logo {
   color: #35589a;
   transition: 0.3s all ease;
 }
+
 .app .create-task-popup input:nth-of-type(2) {
-  margin-bottom: 40px;
+  margin-bottom: 15px;
 }
 
-.app .create-task-popup input:hover {
-  opacity: 100%;
+.app .create-task-popup textarea {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 50%;
+  min-height: 50px;
+  max-height: 100px;
+  margin: 10px 0;
+  padding: 5px 10px;
+  outline: none;
+  border: 1px solid #35589a;
+  border-radius: 5px;
+  opacity: 50%;
+  font-size: 0.8rem;
+  color: #35589a;
 }
 
 .app .create-task-popup .validation-task-name {
   color: salmon;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
   transform: scale(0);
   font-size: 0.8rem;
 }
@@ -254,7 +291,6 @@ header .container .logo {
 .app .create-task-popup p {
   font-weight: 300;
   color: #35589a;
-  margin-bottom: 10px;
 }
 
 .app .create-task-popup .priority-container {
@@ -337,8 +373,15 @@ header .container .logo {
 }
 
 .app .lists .list .header h4 {
-  font-weight: 600;
-  max-width: 70%;
+  width: fit-content;
+  cursor: pointer;
+  transition: 0.2s all ease;
+  padding: 2px 4px 2px 2px;
+}
+
+.app .lists .list .header h4:hover {
+  background-color: rgba(218, 213, 213, 0.5);
+  border-radius: 5px;
 }
 
 .app .lists .list .header button {
@@ -378,24 +421,28 @@ header .container .logo {
   justify-content: space-between;
   align-items: center;
 }
-.app .lists .list .hidden-tasks-header div{
+.app .lists .list .hidden-tasks-header div {
   display: flex;
   align-items: center;
 }
 
-.app .lists .list .hidden-tasks-header img {
-  width: 20px;
-  height: 20px;
-  margin-right: 15px;
-  margin-top: 1.5px;
-  cursor: pointer;
-  opacity: 0.3;
+.app .lists .list .hidden-tasks-header span:first-of-type {
+  display: block;
+  margin-right: 17px;
+  margin-top: 3px;
   transform: scale(0);
-  transition: 0.3s opacity ease;
 }
 
-.app .lists .list .hidden-tasks-header img:hover {
-  opacity: 0.7;
+.app .lists .list .hidden-tasks-header span i {
+  font-size: 20px;
+  cursor: pointer;
+
+  transition: 0.3s all ease;
+}
+
+.app .lists .list .hidden-tasks-header span i:hover {
+  color: black;
+  opacity: 0.8;
 }
 
 .app .lists .list .task {
@@ -430,13 +477,21 @@ header .container .logo {
   transform: scale(0);
 }
 
-.app .lists .list .shown-tasks .task:hover {
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 0px 10px 5px;
-}
-
 .app .lists .list .task .header {
   display: flex;
   justify-content: space-between;
+}
+
+.app .lists .list .task .header h4 {
+  width: fit-content;
+  cursor: pointer;
+  transition: 0.2s all ease;
+  padding: 2px;
+}
+
+.app .lists .list .task .header h4:hover {
+  background-color: rgba(158, 157, 157, 0.3);
+  border-radius: 5px;
 }
 
 .app .lists .list .task .options {
@@ -485,11 +540,6 @@ header .container .logo {
   margin-right: 2px;
 }
 
-.app .lists .list .task .options button:nth-of-type(2) img {
-  width: 17px;
-  height: 17px;
-  margin-right: -1px;
-}
 .app .lists .list .task .options button:nth-of-type(3) i {
   margin-right: 1.5px;
 }
@@ -510,8 +560,6 @@ header .container .logo {
 
 .app .lists .list .task h4 {
   color: rgb(0, 0, 0, 0.7);
-  width: 80%;
-  word-wrap: break-word;
 }
 
 .app .lists .list .task .span-container {

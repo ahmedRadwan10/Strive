@@ -1,7 +1,8 @@
 import { Task, taskIdDragged, taskDraggedFrom } from "./task.js";
-import { lists, listsContainer, submitTaskButton } from "./script.js";
+import { listNameInput, lists, listsContainer, submitTaskButton, themes, listTheme, submitListButton, reload } from "./script.js";
 import { showTaskPopup } from "./taskPopup.js";
 import { showEmptyPageText } from "./emptyPageText.js";
+import { showListPopup, chooseListTheme, hideListPopup} from "./listPopup.js";
 
 export class List {
   constructor(name, color, id = this.generateIdFromDate(), tasks = []) {
@@ -14,8 +15,8 @@ export class List {
     let formatedDate = Date().slice(0, 24).split(" ").join("");
     return formatedDate.replaceAll(":", "");
   }
-  addTask(name, date, priority) {
-    this.tasks.push(new Task(this.generateIdFromDate(), name, date, priority));
+  addTask(name, desc, date, priority) {
+    this.tasks.push(new Task(this.generateIdFromDate(), name, desc, date, priority));
   }
   findTaskIndex(taskId) {
     let taskIndex;
@@ -24,38 +25,105 @@ export class List {
     });
     return taskIndex;
   }
+  findTaskObj(taskId) {
+    let taskObj;
+    this.tasks.forEach((task) => {
+      if (task.id === taskId) taskObj = task;
+    });
+    return taskObj;
+  }
   deleteTask(taskId) {
     let taskIndex = this.findTaskIndex(taskId);
     this.tasks.splice(taskIndex, 1);
   }
   hideTask(taskId) {
-    let taskIndex = this.findTaskIndex(taskId);
-    let taskObj = this.tasks[taskIndex];
+    let taskObj = this.findTaskObj(taskId);
     taskObj.hidden = true;
   }
   showTask(taskId) {
-    let taskIndex = this.findTaskIndex(taskId);
-    let taskObj = this.tasks[taskIndex];
+    let taskObj = this.findTaskObj(taskId);
     taskObj.hidden = false;
   }
   duplicateTask(taskId) {
-    let taskIndex = this.findTaskIndex(taskId);
-    let taskObj = this.tasks[taskIndex];
+    let taskObj = this.findTaskObj(taskId);
     this.tasks.push(
       new Task(
         this.generateIdFromDate(),
         taskObj.name,
+        taskObj.description,
         taskObj.date,
         taskObj.priority
       )
     );
   }
-  static find(listId) {
+  getRedTasks() {
+    let redTasks = [];
+    this.tasks.forEach((task) => {
+      if (task.priority === "red") redTasks.push(task);
+    })
+    return redTasks;
+  }
+  getOrangeTasks() {
+    let orangeTasks = [];
+    this.tasks.forEach((task) => {
+      if (task.priority === "orange") orangeTasks.push(task);
+    })
+    return orangeTasks;
+  }
+  getGreenTasks() {
+    let greenTasks = [];
+    this.tasks.forEach((task) => {
+      if (task.priority === "green") greenTasks.push(task);
+    })
+    return greenTasks;
+  }
+  shownRedTasks() {
+    let shownRedTasks = [];
+    this.tasks.forEach((task) => {
+      if (task.priority === "red" && task.hidden === false) shownRedTasks.push(task);
+    })
+    return shownRedTasks;
+  }
+  shownOrangeTasks() {
+    let shownOrangeTasks = [];
+    this.tasks.forEach((task) => {
+      if (task.priority === "orange" && task.hidden === false) shownOrangeTasks.push(task);
+    })
+    return shownOrangeTasks;
+  }
+  shownGreenTasks() {
+    let shownGreenTasks = [];
+    this.tasks.forEach((task) => {
+      if (task.priority === "green" && task.hidden === false) shownGreenTasks.push(task);
+    })
+    return shownGreenTasks;
+  }
+  getNumOfHiddenTasks() {
+    let numOfHidden = 0;
+    this.tasks.forEach((task) => {
+      if (task.hidden === true) {
+        numOfHidden++;
+      }
+    })
+    return numOfHidden;
+  }
+  edit(listName, listColor) {
+    this.name = listName;
+    this.themeCode = listColor;
+  }
+  static findIndexOf(listId) {
     let listIndex;
     lists.forEach((list, i) => {
       if (list.id === listId) listIndex = i;
     });
     return listIndex;
+  }
+  static findObjOf(listId) {
+    let listObj;
+    lists.forEach((list) => {
+      if (list.id === listId) listObj = list;
+    });
+    return listObj;
   }
 }
 
@@ -67,19 +135,24 @@ export function insertList(listObj) {
 
 let listIdToAddTask;
 let listDraggedOver;
+let listIdToEdit;
 export function displayList(listObj) {
   let list = document.createElement("div");
   list.className = "list";
   list.id = `${listObj.id}`;
   list.innerHTML = `
     <div class="header">
-    <h4 style="color:#${listObj.themeCode}">${listObj.name}</h4>
+    <h4 class="list-name" style="color:#${listObj.themeCode}">${listObj.name.length > 17 ? listObj.name.slice(0, 17) + " ..." : listObj.name}</h4>
     <div class="icons">
     <button class="new-task-button"
-     title="Add new task" data-list-id="${listObj.id}">+</button>
+     title="Add new task">+</button>
     <button class="delete-list-button"
-     title="Delete list" data-list-id="${listObj.id}">
+     title="Delete list">
     <i class="fas fa-trash-alt"></i>
+    </button>
+    <button class="list-options-button"
+     title="List options">
+     <i class="fa-solid fa-gear"></i>
     </button>
     </div>
     </div>
@@ -87,19 +160,15 @@ export function displayList(listObj) {
     <div class="hidden-tasks">
     <div class="hidden-tasks-header">
     <p>Hidden</p>
-    <div><img class="show-and-hide" src="/images/eye.png" alt="hide"><span class="hidden-number">0</span></div>
+    <div><span class="show-and-hide"><i class="fa-solid fa-eye"></i></span><span class="hidden-number">0</span></div>
     </div>
     <div class="tasks"></div>
     </div>
     `;
   listsContainer.appendChild(list);
-  let numOfHidden = 0;
-    listObj.tasks.forEach((task) => {
-      if (task.hidden === true) {
-        numOfHidden++;
-      }
-    })
-    list.querySelector(".hidden-number").innerHTML = numOfHidden;
+
+  let numOfHidden = listObj.getNumOfHiddenTasks();
+  list.querySelector(".hidden-number").innerHTML = numOfHidden;
   if (numOfHidden > 0) {
     list.querySelector(".show-and-hide").style.transform = "scale(1)"
   }
@@ -110,11 +179,21 @@ export function displayList(listObj) {
     submitTaskButton.textContent = "Add";
   };
 
+  let listName = list.querySelector(".list-name");
+  listName.onclick = () => {
+    listNameInput.value = listObj.name;
+    let themeElement = document.querySelector(`[data-theme="${listObj.themeCode}"]`);
+    chooseListTheme(themes, themeElement);
+    submitListButton.textContent = "Save";
+    listIdToEdit = listObj.id;
+    showListPopup();
+  }
+
   let deleteListBtn = list.querySelector(".delete-list-button");
   deleteListBtn.onclick = () => {
     list.remove();
     if (!listsContainer.innerHTML) showEmptyPageText();
-    let listIndex = List.find(listObj.id);
+    let listIndex = List.findIndexOf(listObj.id);
     lists.splice(listIndex, 1);
     window.localStorage.setItem("lists", JSON.stringify(lists));
   };
@@ -123,11 +202,11 @@ export function displayList(listObj) {
   showAndHideBtn.onclick = () => {
     if (show) {
       list.querySelector(".hidden-tasks .tasks").style.display = "block";
-      list.querySelector(".show-and-hide").src = "./images/visibility.png"
+      list.querySelector(".show-and-hide").innerHTML = '<i class="fa-solid fa-eye-slash"></i>'
       show = false;
     } else {
       list.querySelector(".hidden-tasks .tasks").style.display = "none";
-      list.querySelector(".show-and-hide").src = "./images/eye.png"
+      list.querySelector(".show-and-hide").innerHTML = '<i class="fa-solid fa-eye"></i>'
       show = true;
     }
   };
@@ -138,22 +217,29 @@ export function displayList(listObj) {
     showTheLine(list.id);
   };
 }
+export function updateList() {
+  let listObj = List.findObjOf(listIdToEdit);
+  let currentTheme = document.querySelector(".selected-theme").getAttribute("data-theme");
+  listObj.edit(listNameInput.value, currentTheme)
+  window.localStorage.setItem("lists", JSON.stringify(lists));
+  reload();
+  hideListPopup();
+}
 
 function showTheLine(listId) {
-  let taskElements = document.querySelectorAll(".tasks .task");
+  let taskElements = document.querySelectorAll(".task");
   taskElements.forEach((taskElement) => {
     taskElement.querySelector(".line-after").style.transform = "scale(0)";
     taskElement.querySelector(".line-before").style.transform = "scale(0)";
   });
 
-  let listIndex = List.find(listId);
-  let listObj = lists[listIndex];
+  // Currently dragging over listObj.
+  let listObj = List.findObjOf(listId);
 
-  let listIndexOfDraggedT = List.find(taskDraggedFrom);
-  let listObjOfDraggedT = lists[listIndexOfDraggedT];
+  // listObj of dragged task.
+  let listObjOfDraggedT = List.findObjOf(taskDraggedFrom);
 
-  let draggedTaskIndex = listObjOfDraggedT.findTaskIndex(taskIdDragged);
-  let draggedTaskObj = listObjOfDraggedT.tasks[draggedTaskIndex]
+  let draggedTaskObj = listObjOfDraggedT.findTaskObj(taskIdDragged);
   let draggedTaskPriority = draggedTaskObj.priority;
 
   if (listId !== taskDraggedFrom) {
@@ -170,12 +256,9 @@ function showTheLine(listId) {
         return;
       }
       if (draggedTaskObj.priority === "orange") {
-        let redTasks = [];
-        let greenTasks = [];
-        listObj.tasks.forEach((task) => {
-          if (task.priority === "red") redTasks.push(task);
-          if (task.priority === "green") greenTasks.push(task);
-        })
+        let redTasks = listObj.getRedTasks();
+        let greenTasks = listObj.getGreenTasks();
+    
         if (redTasks.length > 0) {
           document.querySelector(`#${redTasks[redTasks.length - 1].id}`).querySelector(".line-after").style.transform = "scale(1)"
           return;
@@ -192,7 +275,6 @@ function showTheLine(listId) {
     }
   
     let samePriorityTasksSorted = bubbleSort(samePriorityTasks)
-    // task index after sorting the samePriorityTasks.
     if (samePriorityTasksSorted.length > 1) {   
       samePriorityTasksSorted.forEach((task, i) => {
         if (task.id === draggedTaskObj.id) {
@@ -214,19 +296,14 @@ function showTheLine(listId) {
 
 
 export function sortListTasks(listId) {
-  let greenTasks = [];
-  let orangeTasks = [];
-  let redTasks = [];
-  lists.forEach((list) => {
-    if (list.id === listId) {
-      list.tasks.forEach((task) => {
-          if (task.priority === "green") greenTasks.push(task)
-          if (task.priority === "orange") orangeTasks.push(task)
-          if (task.priority === "red") redTasks.push(task)
-      })
-      list.tasks = [...bubbleSort(redTasks), ...bubbleSort(orangeTasks), ...bubbleSort(greenTasks)];
-    }
-  });
+  let listObj = List.findObjOf(listId);
+
+  let redTasks = listObj.getRedTasks();
+  let orangeTasks = listObj.getOrangeTasks();
+  let greenTasks = listObj.getGreenTasks();
+  
+  listObj.tasks = [...bubbleSort(redTasks), ...bubbleSort(orangeTasks), ...bubbleSort(greenTasks)];
+
 }
 
 // Sort tasks based on DATE.
@@ -235,16 +312,8 @@ function bubbleSort(arr){
   for(let i = arr.length; i > 0; i--){
     noSwaps = true;
     for (let j = 0; j < i - 1; j++){
-      let currentDate = new Date(
-        arr[j].date.slice(0, 4),
-        arr[j].date.slice(5, 7) - 1,
-        arr[j].date.slice(8, 10)
-      );
-      let comparedDate = new Date(
-        arr[j+1].date.slice(0, 4),
-        arr[j+1].date.slice(5, 7) - 1,
-        arr[j+1].date.slice(8, 10)
-      );
+      let currentDate = arr[j].getDateObj();
+      let comparedDate = arr[j + 1].getDateObj();
       if (currentDate > comparedDate) {
         let temp = arr[j];
         arr[j] = arr[j+1];
@@ -262,4 +331,4 @@ function bubbleSort(arr){
   else return [...arr.slice(counter), ...arr.slice(0, counter)];
 }
 
-export { listIdToAddTask, listDraggedOver };
+export { listIdToAddTask, listDraggedOver};

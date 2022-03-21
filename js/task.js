@@ -6,26 +6,36 @@ import {
   priorities,
   submitTaskButton,
   reload,
+  taskDescElement,
 } from "./script.js";
 import { choosePriority, showTaskPopup } from "./taskPopup.js";
 
 export class Task {
-  constructor(id, name, date, priority, hidden = false) {
+  constructor(id, name, desc, date, priority, hidden = false) {
     this.id = id;
     this.name = name;
+    this.description = desc;
     this.date = date;
     this.priority = priority;
     this.hidden = hidden;
   }
-  edit(name, date, priority) {
+  edit(name, desc, date, priority) {
     this.name = name;
+    this.description = desc;
     this.date = date;
     this.priority = priority;
   }
+  getDateObj() {
+    return new Date(
+      this.date.slice(0, 4),
+      this.date.slice(5, 7) - 1,
+      this.date.slice(8, 10)
+    );
+  }
 }
 
-export function insertTask(listObj, taskName, taskDate, taskPriority) {
-  listObj.addTask(taskName, taskDate, taskPriority);
+export function insertTask(listObj, taskName, taskDesc, taskDate, taskPriority) {
+  listObj.addTask(taskName, taskDesc, taskDate, taskPriority);
   displayTasks(listObj);
   sortListTasks(listObj.id);
   window.localStorage.setItem("lists", JSON.stringify(lists));
@@ -48,7 +58,7 @@ export function displayTasks(listObj, taskID = listObj.generateIdFromDate()) {
   taskDiv.draggable = "true";
   taskDiv.innerHTML = `
           <div class="header">
-          <h4>${taskObj.name}</h4>
+          <h4>${taskObj.name.length > 17 ? taskObj.name.slice(0, 17) + " ..." : taskObj.name}</h4>
           <button class="options-btn"><i class="fas fa-ellipsis-h"></i></button>
           </div>
           <div class="span-container">
@@ -58,11 +68,8 @@ export function displayTasks(listObj, taskID = listObj.generateIdFromDate()) {
           <span class="date">${taskObj.date}</span>
           </div>
           <div class="options">
-          <button class="edit-task-button">
-          Edit<i class="far fa-edit"></i> 
-          </button>
           <button class="hide-task-button">
-          Hide<img src="./images/visibility.png" alt="hide">
+          Hide<i class="fa-solid fa-eye-slash"></i>
           </button>
           <button class="duplicate-task-button">
           Duplicate<i class="far fa-clone"></i>
@@ -78,26 +85,12 @@ export function displayTasks(listObj, taskID = listObj.generateIdFromDate()) {
   if (taskObj.hidden === false) document.querySelector(`#${listId}`).querySelector(".shown-tasks").appendChild(taskDiv);
   if (taskObj.hidden === true) {
     document.querySelector(`#${listId} .hidden-tasks .tasks`).appendChild(taskDiv);
-    document.querySelector(`#${taskObj.id} .options .hide-task-button`).innerHTML = "Show<img src='./images/eye.png' alt='hide'>"
+    document.querySelector(`#${taskObj.id} .options .hide-task-button`).innerHTML = 'Show<i class="fa-solid fa-eye"></i>'
   }
 
   let optionsBtn = taskDiv.querySelector(".options-btn");
   optionsBtn.onclick = () => {
     taskDiv.querySelector(".options").style.transform = "scale(1)";
-  };
-
-  let editTaskBtn = taskDiv.querySelector(".edit-task-button");
-  editTaskBtn.onclick = () => {
-    taskNameElement.value = taskObj.name;
-    taskDateElement.value = taskObj.date;
-    let priorityElement = document.querySelector(
-      `[data-priority=${taskObj.priority}]`
-    );
-    choosePriority(priorities, priorityElement);
-    submitTaskButton.textContent = "Save";
-    showTaskPopup();
-    listObjToEditTask = listObj;
-    taskIndexToEdit = taskIndex;
   };
 
   let hideTaskBtn = taskDiv.querySelector(".hide-task-button");
@@ -127,6 +120,20 @@ export function displayTasks(listObj, taskID = listObj.generateIdFromDate()) {
     reload();
   };
 
+  taskDiv.querySelector(".header h4").onclick = () => {
+    taskNameElement.value = taskObj.name;
+    taskDescElement.value = taskObj.description;
+    taskDateElement.value = taskObj.date;
+    let priorityElement = document.querySelector(
+      `[data-priority=${taskObj.priority}]`
+    );
+    choosePriority(priorities, priorityElement);
+    submitTaskButton.textContent = "Save";
+    showTaskPopup();
+    listObjToEditTask = listObj;
+    taskIndexToEdit = taskIndex;
+  };
+
   taskDiv.ondragstart = () => {
     taskIdDragged = taskDiv.id;
     taskDraggedFrom = taskDiv.parentElement.parentElement.id;
@@ -145,7 +152,7 @@ export function displayTasks(listObj, taskID = listObj.generateIdFromDate()) {
 export function updateTask() {
   let taskObj = listObjToEditTask.tasks[taskIndexToEdit];
   let currentPriority = document.querySelector(".selected-priority").getAttribute("data-priority");
-  taskObj.edit(taskNameElement.value, taskDateElement.value, currentPriority);
+  taskObj.edit(taskNameElement.value, taskDescElement.value, taskDateElement.value, currentPriority);
   sortListTasks(listObjToEditTask.id);
   window.localStorage.setItem("lists", JSON.stringify(lists));
   reload();
@@ -153,28 +160,19 @@ export function updateTask() {
 
 export function checkValidDate() {
   let currentDate = new Date();
-  let tempLists = JSON.parse(window.localStorage.getItem("lists"));
-  tempLists.forEach((list) => {
+  lists.forEach((list) => {
     list.tasks.forEach((task) => {
-      let comparedDate = new Date(
-        task.date.slice(0, 4),
-        task.date.slice(5, 7) - 1,
-        task.date.slice(8, 10)
-      );
+      let comparedDate = task.getDateObj();
       if (currentDate > comparedDate && task.date !== "") {
         document
-          .querySelector(`#${task.id}`)
-          .querySelector(".date")
-          .classList.add("not-valid");
+          .querySelector(`#${task.id} .date`).classList.add("not-valid");
         if (
           currentDate.getDate() === comparedDate.getDate() &&
           currentDate.getMonth() === comparedDate.getMonth() &&
           currentDate.getFullYear() === comparedDate.getFullYear()
         ) {
           document
-            .querySelector(`#${task.id}`)
-            .querySelector(".date")
-            .classList.remove("not-valid");
+            .querySelector(`#${task.id} .date`).classList.remove("not-valid");
         }
       }
     });

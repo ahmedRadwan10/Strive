@@ -4,6 +4,7 @@ import {
     validationTaskName,
     taskNameElement,
     taskDateElement,
+    taskDescElement,
   } from "./script.js";
 
   export function choosePriority(priorities, priority) {
@@ -26,6 +27,7 @@ import {
   }
   export function clearTaskPopupValues() {
     taskNameElement.value = "";
+    taskDescElement.value = "";
     taskDateElement.value = "";
   }
   

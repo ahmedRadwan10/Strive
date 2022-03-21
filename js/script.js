@@ -1,4 +1,4 @@
-import { List, displayList, insertList, listIdToAddTask } from "./list.js";
+import { List, displayList, insertList, listIdToAddTask, updateList } from "./list.js";
 import { Task, insertTask, displayTasks, updateTask, checkValidDate } from "./task.js";
 import { hideEmptyPageText, showEmptyPageText } from "./emptyPageText.js";
 import {
@@ -19,12 +19,13 @@ import {
 
 export const listNameInput = document.querySelector("[data-list-name]");
 export const themes = document.querySelectorAll(".theme");
-export const createListButton = document.querySelector(".create-list");
+export const submitListButton = document.querySelector(".create-list");
 export const createListDiv = document.querySelector(".create-list-popup");
 export const listsContainer = document.querySelector(".lists");
 export const overlayDiv = document.querySelector(".overlay");
 export const priorities = document.querySelectorAll(".priority");
 export const taskNameElement = document.querySelector("[data-task-name]");
+export const taskDescElement = document.querySelector("[data-task-desc]");
 export const taskDateElement = document.querySelector("[data-task-date]");
 export const createTaskDiv = document.querySelector(".create-task-popup");
 export const closeTaskPopup = document.querySelector("[data-close]");
@@ -55,7 +56,7 @@ export function reload() {
     stringLists.forEach((l) => {
       let list = new List(l.name, l.themeCode, l.id);
       l.tasks.forEach((task) => {
-        list.tasks.push(new Task(task.id, task.name, task.date, task.priority, task.hidden))
+        list.tasks.push(new Task(task.id, task.name, task.description, task.date, task.priority, task.hidden))
       })
       displayList(list);
       l.tasks.forEach((task) => {
@@ -76,6 +77,7 @@ document.onmouseup = () => {
 // Lists
 
 newList.onclick = () => {
+  submitListButton.textContent = "Create"
   showListPopup();
 };
 
@@ -98,16 +100,20 @@ themes.forEach((theme) => {
   };
 });
 
-createListButton.onclick = () => {
+submitListButton.onclick = () => {
   let listName = listNameInput.value;
   if (listName === "") {
     showListValidationText();
     return;
   }
-  hideEmptyPageText();
-  insertList(new List(listName, listTheme));
-  hideListPopup();
-  clearListPopupValues();
+  if (submitListButton.textContent === "Save") {
+    updateList();
+  } else {
+    hideEmptyPageText();
+    insertList(new List(listName, listTheme));
+    hideListPopup();
+    clearListPopupValues();
+}
 };
 
 // Tasks
@@ -133,9 +139,10 @@ closeTaskPopup.onclick = () => {
     if (submitTaskButton.textContent === "Save") {
       updateTask();
     } else {
-      let listIndex = List.find(listIdToAddTask);
-      insertTask(lists[listIndex],
+      let listObj = List.findObjOf(listIdToAddTask);
+      insertTask(listObj,
         taskNameElement.value,
+        taskDescElement.value,
         taskDateElement.value,
         taskPriority
       );
@@ -145,4 +152,4 @@ closeTaskPopup.onclick = () => {
     clearTaskPopupValues();
   };
 
-export { lists, taskPriority };
+export { lists, taskPriority, listTheme };
