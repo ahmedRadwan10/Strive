@@ -5,6 +5,7 @@ import {
     taskNameElement,
     taskDateElement,
     taskDescElement,
+    newList
   } from "./script.js";
 
   export function choosePriority(priorities, priority) {
@@ -15,12 +16,14 @@ import {
     return priority.getAttribute(`data-priority`);
   }
   
-  export function showTaskPopup() {
+export function showTaskPopup() {
+    newList.style.display = "none";
     overlayDiv.classList.add("overlay-active");
     createTaskDiv.style.transform = "translate(-50%,-50%) scale(1)";
   }
   
-  export function hideTaskPopup() {
+export function hideTaskPopup() {
+    newList.style.display = "block";
     overlayDiv.classList.remove("overlay-active");
     createTaskDiv.style.transform = "translate(-50%,-50%) scale(0)";
     validationTaskName.style.transform = "scale(0)";

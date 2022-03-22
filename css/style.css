@@ -75,7 +75,7 @@ header .container .logo {
     height: 50px;
     border-radius: 50%;
     box-shadow: rgba(100, 100, 111, 0.7) 0px 7px 15px 0px;
-    z-index: 999;
+    z-index: 50;
   }
 }
 /* end of header */
@@ -93,10 +93,10 @@ header .container .logo {
   left: 50%;
   transform: translate(-50%, -50%) scale(0);
   margin-top: 20px;
-  z-index: 2;
+  z-index: 999;
 }
 
-@media screen and (max-width: 450px) {
+@media screen and (max-width: 667px) {
   .app .create-list-popup {
     width: 300px;
     height: 400px;
@@ -222,10 +222,10 @@ header .container .logo {
   z-index: 2;
 }
 
-@media screen and (max-width: 450px) {
+@media screen and (max-width: 667px) {
   .app .create-task-popup {
     width: 300px;
-    height: 460px;
+    height: 530px;
   }
 }
 

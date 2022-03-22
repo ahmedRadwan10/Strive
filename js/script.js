@@ -43,6 +43,8 @@ export const validationTaskName = document.querySelector(
 let lists = [];
 
 window.onload = () => {
+  if (window.innerWidth <= 667) newList.innerHTML = '<i class="fa-solid fa-plus"></i>';
+  else newList.innerHTML = "New List"
   reload();
 };
 
