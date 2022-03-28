@@ -5,7 +5,7 @@ import {
   taskDateElement,
   priorities,
   submitTaskButton,
-  reload,
+  reloadDOM,
   taskDescElement,
 } from "./script.js";
 import { choosePriority, showTaskPopup } from "./taskPopup.js";
@@ -39,7 +39,7 @@ export function insertTask(listObj, taskName, taskDesc, taskDate, taskPriority) 
   displayTasks(listObj);
   sortListTasks(listObj.id);
   window.localStorage.setItem("lists", JSON.stringify(lists));
-  reload();
+  reloadDOM();
 }
 
 let listObjToEditTask;
@@ -98,11 +98,11 @@ export function displayTasks(listObj, taskID = listObj.generateIdFromDate()) {
     if (!taskObj.hidden) {
       listObj.hideTask(taskId);
       window.localStorage.setItem("lists", JSON.stringify(lists));
-      reload();
+      reloadDOM();
     } else {
       listObj.showTask(taskId);
       window.localStorage.setItem("lists", JSON.stringify(lists));
-      reload();
+      reloadDOM();
     }
   };
   let duplicateTaskBtn = taskDiv.querySelector(".duplicate-task-button");
@@ -110,14 +110,14 @@ export function displayTasks(listObj, taskID = listObj.generateIdFromDate()) {
     listObj.duplicateTask(taskId);
     sortListTasks(listObj.id);
     window.localStorage.setItem("lists", JSON.stringify(lists));
-    reload();
+    reloadDOM();
   };
 
   let deleteTaskBtn = taskDiv.querySelector(".delete-task-button");
   deleteTaskBtn.onclick = () => {
     listObj.deleteTask(taskId);
     window.localStorage.setItem("lists", JSON.stringify(lists));
-    reload();
+    reloadDOM();
   };
 
   taskDiv.querySelector(".header h4").onclick = () => {
@@ -155,7 +155,7 @@ export function updateTask() {
   taskObj.edit(taskNameElement.value, taskDescElement.value, taskDateElement.value, currentPriority);
   sortListTasks(listObjToEditTask.id);
   window.localStorage.setItem("lists", JSON.stringify(lists));
-  reload();
+  reloadDOM();
 }
 
 export function checkValidDate() {
@@ -180,8 +180,8 @@ export function checkValidDate() {
 }
 
 function dropTaskToNewList() {
-  let newList;
-  let oldList;
+  let newList = {};
+  let oldList = {};
   lists.forEach((list) => {
     if (list.id === listDraggedOver) newList = list;
     if (list.id === taskDraggedFrom) oldList = list;
@@ -195,8 +195,8 @@ function dropTaskToNewList() {
   });
   //update local storage.
   window.localStorage.setItem("lists", JSON.stringify(lists));
-  //refresh the DOM.
-  reload();
+  //reload the DOM.
+  reloadDOM();
 }
 
 

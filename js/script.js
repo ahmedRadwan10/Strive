@@ -45,7 +45,7 @@ let lists = [];
 window.onload = () => {
   if (window.innerWidth <= 667) newList.innerHTML = '<i class="fa-solid fa-plus"></i>';
   else newList.innerHTML = "New List"
-  reload();
+  reloadDOM();
 };
 
 window.onresize = () => {
@@ -53,7 +53,7 @@ window.onresize = () => {
   else newList.innerHTML = "New List"
 }
 
-export function reload() {
+export function reloadDOM() {
   listsContainer.innerHTML = "";
   lists = []
   let stringLists = JSON.parse(window.localStorage.getItem("lists")) || [];

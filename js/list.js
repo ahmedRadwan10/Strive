@@ -1,5 +1,5 @@
 import { Task, taskIdDragged, taskDraggedFrom } from "./task.js";
-import { listNameInput, lists, listsContainer, submitTaskButton, themes, listTheme, submitListButton, reload } from "./script.js";
+import { listNameInput, lists, listsContainer, submitTaskButton, themes, submitListButton, reloadDOM } from "./script.js";
 import { showTaskPopup } from "./taskPopup.js";
 import { showEmptyPageText } from "./emptyPageText.js";
 import { showListPopup, chooseListTheme, hideListPopup} from "./listPopup.js";
@@ -56,47 +56,19 @@ export class List {
       )
     );
   }
-  getRedTasks() {
-    let redTasks = [];
+  getSameTasks(color) {
+    let sameTasks = [];
     this.tasks.forEach((task) => {
-      if (task.priority === "red") redTasks.push(task);
+      if (task.priority === color) sameTasks.push(task);
     })
-    return redTasks;
+    return sameTasks;
   }
-  getOrangeTasks() {
-    let orangeTasks = [];
+  shownSameTasks(color) {
+    let shownTasks = [];
     this.tasks.forEach((task) => {
-      if (task.priority === "orange") orangeTasks.push(task);
+      if (task.priority === color && task.hidden === false) shownTasks.push(task);
     })
-    return orangeTasks;
-  }
-  getGreenTasks() {
-    let greenTasks = [];
-    this.tasks.forEach((task) => {
-      if (task.priority === "green") greenTasks.push(task);
-    })
-    return greenTasks;
-  }
-  shownRedTasks() {
-    let shownRedTasks = [];
-    this.tasks.forEach((task) => {
-      if (task.priority === "red" && task.hidden === false) shownRedTasks.push(task);
-    })
-    return shownRedTasks;
-  }
-  shownOrangeTasks() {
-    let shownOrangeTasks = [];
-    this.tasks.forEach((task) => {
-      if (task.priority === "orange" && task.hidden === false) shownOrangeTasks.push(task);
-    })
-    return shownOrangeTasks;
-  }
-  shownGreenTasks() {
-    let shownGreenTasks = [];
-    this.tasks.forEach((task) => {
-      if (task.priority === "green" && task.hidden === false) shownGreenTasks.push(task);
-    })
-    return shownGreenTasks;
+    return shownTasks;
   }
   getNumOfHiddenTasks() {
     let numOfHidden = 0;
@@ -149,10 +121,6 @@ export function displayList(listObj) {
     <button class="delete-list-button"
      title="Delete list">
     <i class="fas fa-trash-alt"></i>
-    </button>
-    <button class="list-options-button"
-     title="List options">
-     <i class="fa-solid fa-gear"></i>
     </button>
     </div>
     </div>
@@ -222,7 +190,7 @@ export function updateList() {
   let currentTheme = document.querySelector(".selected-theme").getAttribute("data-theme");
   listObj.edit(listNameInput.value, currentTheme)
   window.localStorage.setItem("lists", JSON.stringify(lists));
-  reload();
+  reloadDOM();
   hideListPopup();
 }
 
@@ -298,9 +266,9 @@ function showTheLine(listId) {
 export function sortListTasks(listId) {
   let listObj = List.findObjOf(listId);
 
-  let redTasks = listObj.getRedTasks();
-  let orangeTasks = listObj.getOrangeTasks();
-  let greenTasks = listObj.getGreenTasks();
+  let redTasks = listObj.getSameTasks("red");
+  let orangeTasks = listObj.getSameTasks("orange");
+  let greenTasks = listObj.getSameTasks("green");
   
   listObj.tasks = [...bubbleSort(redTasks), ...bubbleSort(orangeTasks), ...bubbleSort(greenTasks)];
 
