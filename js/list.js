@@ -224,8 +224,8 @@ function showTheLine(listId) {
         return;
       }
       if (draggedTaskObj.priority === "orange") {
-        let redTasks = listObj.getRedTasks();
-        let greenTasks = listObj.getGreenTasks();
+        let redTasks = listObj.getSameTasks("red");
+        let greenTasks = listObj.getSameTasks("green");
     
         if (redTasks.length > 0) {
           document.querySelector(`#${redTasks[redTasks.length - 1].id}`).querySelector(".line-after").style.transform = "scale(1)"
