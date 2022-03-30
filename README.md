@@ -1,6 +1,6 @@
 # Strive
 ### https://ahmedradwan10.github.io/Strive/
-Tasks management Web App implemented as a javaScript personal side project.
+Task management Web App implemented as a javaScript personal side project.
 ## App Features
 * Add any number of lists to the workspace.
 * Each list has a Color and Name.
