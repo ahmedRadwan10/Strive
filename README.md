@@ -14,7 +14,7 @@ Task management Web App implemented as a javaScript personal side project.
 * javaScript.
 * html.
 * css.
-* Browser Local Storage as a storage solution.
+* Browser Local Storage.
 * OOP.
 * Searching and Sorting Algorithms.
 ## Future Updates
