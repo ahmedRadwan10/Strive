@@ -387,7 +387,7 @@ header .container .logo {
 }
 
 .app .lists .list .header button {
-  background-color: gray;
+  background-color: transparent;
   opacity: 0.5;
   color: aliceblue;
   outline: none;
