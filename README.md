@@ -1,5 +1,5 @@
 # Strive
-### https://ahmedradwan10.github.io/Strive/
+### https://striveit.netlify.app/
 Task management Web App implemented as a javaScript personal side project.
 ## App Features
 * Add any number of lists to the workspace.
