@@ -1,0 +1,136 @@
+/* start create task popup */
+
+.app .create-task-popup {
+    width: 400px;
+    height: 550px;
+    background-color: azure;
+    border-radius: 10px;
+    padding: 15px 25px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 15px 0px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    margin-top: 20px;
+    z-index: 2;
+  }
+  
+  @media screen and (max-width: 667px) {
+    .app .create-task-popup {
+      width: 300px;
+      height: 530px;
+    }
+  }
+  
+  .app .create-task-popup .popup-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  
+  .app .create-task-popup .popup-header span {
+    color: #35589a;
+    font-size: 1.6rem;
+    cursor: pointer;
+  }
+  
+  .app .create-task-popup .popup-header h3 {
+    font-weight: 300;
+    color: #35589a;
+  }
+  .app .create-task-popup label {
+    font-weight: 300;
+    color: #35589a;
+  }
+  .app .create-task-popup input {
+    width: 100%;
+    padding: 5px 10px;
+    outline: none;
+    border: 1px solid #35589a;
+    border-radius: 5px;
+    margin: 10px 0 5px;
+    opacity: 50%;
+    font-size: 0.8rem;
+    color: #35589a;
+    transition: 0.3s all ease;
+  }
+  
+  .app .create-task-popup input:nth-of-type(2) {
+    margin-bottom: 15px;
+  }
+  
+  .app .create-task-popup textarea {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 50%;
+    min-height: 50px;
+    max-height: 100px;
+    margin: 10px 0;
+    padding: 5px 10px;
+    outline: none;
+    border: 1px solid #35589a;
+    border-radius: 5px;
+    opacity: 50%;
+    font-size: 0.8rem;
+    color: #35589a;
+  }
+  
+  .app .create-task-popup .validation-task-name {
+    color: salmon;
+    margin-bottom: 10px;
+    transform: scale(0);
+    font-size: 0.8rem;
+  }
+  
+  .app .create-task-popup p {
+    font-weight: 300;
+    color: #35589a;
+  }
+  
+  .app .create-task-popup .priority-container {
+    margin-top: 30px;
+  }
+  .app .create-task-popup .priority-container span {
+    width: 60px;
+    height: 20px;
+    margin-right: 20px;
+    display: inline-block;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s all ease;
+  }
+  
+  .app .create-task-popup .priority-container span:first-of-type {
+    background-color: green;
+  }
+  
+  .app .create-task-popup .priority-container span:nth-of-type(2) {
+    background-color: orange;
+  }
+  .app .create-task-popup .priority-container span:nth-of-type(3) {
+    background-color: red;
+  }
+  
+  .selected-priority {
+    transform: scale(1.3);
+  }
+  
+  .app .create-task-popup button {
+    width: 100%;
+    margin-top: 60px;
+    outline: none;
+    border: none;
+    border-radius: 10px;
+    background-color: #3fa796;
+    color: white;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: 0.3s all ease;
+  }
+  
+  .app .create-task-popup button:hover {
+    opacity: 0.7;
+  }
+  
+  /* end create task popup */

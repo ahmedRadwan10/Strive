@@ -120,18 +120,21 @@ export function displayTasks(listObj, taskID = listObj.generateIdFromDate()) {
     reloadDOM();
   };
 
-  taskDiv.querySelector(".header h4").onclick = () => {
-    taskNameElement.value = taskObj.name;
-    taskDescElement.value = taskObj.description;
-    taskDateElement.value = taskObj.date;
-    let priorityElement = document.querySelector(
-      `[data-priority=${taskObj.priority}]`
-    );
-    choosePriority(priorities, priorityElement);
-    submitTaskButton.textContent = "Save";
-    showTaskPopup();
-    listObjToEditTask = listObj;
-    taskIndexToEdit = taskIndex;
+  taskDiv.onclick = () => {
+    let currentHoverElements = document.querySelectorAll(":hover");
+    if (currentHoverElements.length < 9 && currentHoverElements.length > 4) {
+      taskNameElement.value = taskObj.name;
+      taskDescElement.value = taskObj.description;
+      taskDateElement.value = taskObj.date;
+      let priorityElement = document.querySelector(
+        `[data-priority=${taskObj.priority}]`
+      );
+      choosePriority(priorities, priorityElement);
+      submitTaskButton.textContent = "Save";
+      showTaskPopup();
+      listObjToEditTask = listObj;
+      taskIndexToEdit = taskIndex;
+    }
   };
 
   taskDiv.ondragstart = () => {

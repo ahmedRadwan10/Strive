@@ -1,0 +1,188 @@
+.app .lists .list .hidden-tasks .tasks {
+    opacity: 0.5;
+    display: none;
+  }
+  
+  .app .lists .list .hidden-tasks .tasks .task:first-of-type {
+    margin-top: 14px;
+  }
+  
+  .app .lists .list .hidden-tasks-header {
+    color: rgb(220, 220, 220);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .app .lists .list .hidden-tasks-header div {
+    display: flex;
+    align-items: center;
+  }
+  
+  .app .lists .list .hidden-tasks-header span:first-of-type {
+    display: block;
+    margin-right: 17px;
+    margin-top: 3px;
+    transform: scale(0);
+  }
+  
+  .app .lists .list .hidden-tasks-header span i {
+    font-size: 20px;
+    cursor: pointer;
+  
+    transition: 0.3s all ease;
+  }
+  
+  .app .lists .list .hidden-tasks-header span i:hover {
+    color: black;
+    opacity: 0.8;
+  }
+  
+  .app .lists .list .task {
+    min-height: 85px;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    background-color: rgb(220, 220, 220, 0.4);
+    position: relative;
+    transition: 0.2s all ease;
+    cursor: pointer;
+  }
+
+  .app .lists .list .task:hover .header button {
+    transform: scale(1);
+  }
+  
+  .app .lists .list .task .line-before {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    width: calc(100% - 20px);
+    height: 3px;
+    border-radius: 10px;
+    background-color: grey;
+    opacity: 0.7;
+    transform: scale(0);
+  }
+  
+  .app .lists .list .task .line-after {
+    position: absolute;
+    top: calc(100% + 6px);
+    width: calc(100% - 20px);
+    height: 3px;
+    border-radius: 10px;
+    background-color: grey;
+    opacity: 0.7;
+    transform: scale(0);
+  }
+  
+  .app .lists .list .task .header {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .app .lists .list .task .header h4 {
+    width: fit-content;
+    cursor: pointer;
+    transition: 0.2s all ease;
+    padding: 2px;
+  }
+  
+  .app .lists .list .task .header h4:hover {
+    background-color: rgba(158, 157, 157, 0.3);
+    border-radius: 5px;
+  }
+  
+  .app .lists .list .task .options {
+    position: absolute;
+    top: 30px;
+    right: 10px;
+    width: 120px;
+    border-radius: 10px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 0px 20px 5px;
+    transform: scale(0);
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(250, 250, 250);
+  }
+  
+  .app .lists .list .task .options button {
+    padding: 5px 6px;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: 0.3s all ease;
+    border: none;
+    outline: none;
+  }
+  
+  .app .lists .list .task .options button:hover {
+    opacity: 0.5;
+    background-color: rgb(128, 128, 128);
+    color: aliceblue;
+  }
+  
+  .app .lists .list .task .options button:first-of-type {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+  
+  .app .lists .list .task .options button:last-of-type {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    background-color: salmon;
+    color: white;
+  }
+  
+  .app .lists .list .task .options button:last-of-type i {
+    margin-right: 2px;
+  }
+  
+  .app .lists .list .task .options button:nth-of-type(3) i {
+    margin-right: 1.5px;
+  }
+  
+  .app .lists .list .task .header button {
+    background-color: transparent;
+    color: rgba(0, 0, 0, 0.9);
+    padding: 0;
+    transform: scale(0);
+    transition: 0.2s all ease;
+  }
+  
+  .app .lists .list .task .header button:hover {
+    opacity: 0.7;
+  }
+  
+  .app .lists .list .task .header button i {
+    font-size: 1.4rem;
+  }
+  
+  .app .lists .list .task h4 {
+    color: rgb(0, 0, 0, 0.7);
+  }
+  
+  .app .lists .list .task .span-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .app .lists .list .task span:first-of-type {
+    display: inline-block;
+    width: 60px;
+    height: 10px;
+    border-radius: 5px;
+  }
+  
+  .app .lists .list .task .date {
+    display: inline-block;
+    font-size: 0.8rem;
+    padding: 3px 5px;
+    background-color: rgb(200, 200, 200);
+    border-radius: 5px;
+  }
+  
+  .not-valid {
+    color: tomato;
+  }
+  

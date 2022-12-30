@@ -84,7 +84,7 @@ document.onmouseup = () => {
 // Lists
 
 newList.onclick = () => {
-  submitListButton.textContent = "Create"
+  submitListButton.textContent = "Create List"
   showListPopup();
 };
 
